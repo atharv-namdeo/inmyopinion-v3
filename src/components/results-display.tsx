@@ -20,11 +20,11 @@ export function ResultsDisplay() {
 
  useEffect(() => {
     const quizId = searchParams.get('quizId');
-    if (!quizId || (answersLoaded && Object.keys(answers).length === 0)) {
+    if (!quizId) {
+        // If no quizId, redirect to home
         router.replace('/');
         return;
     }
-    
     if (answersLoaded && Object.keys(answers).length > 0) {
       const saveAnswers = async () => {
         try {
@@ -45,6 +45,7 @@ export function ResultsDisplay() {
       }
       saveAnswers();
     }
+    // Do NOT redirect if answers are empty after submission
   }, [searchParams, router, answers, answersLoaded, clearAnswers, toast]);
 
   const handleCreateOwnQuiz = () => {

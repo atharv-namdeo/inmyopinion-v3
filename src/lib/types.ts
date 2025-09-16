@@ -14,7 +14,7 @@ export type Quiz = {
   id: string;
   userId: string;
   title: string;
-  questions: Omit<Question, 'id'>[];
+  questions: Question[];
   createdAt: Timestamp;
 };
 

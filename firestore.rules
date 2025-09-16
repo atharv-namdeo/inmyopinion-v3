@@ -2,8 +2,37 @@ rules_version = '2';
 
 service cloud.firestore {
   match /databases/{database}/documents {
+<<<<<<< HEAD
     match /{document=**} {
       allow read, write: if true;
+=======
+
+    // Users can only read and write to their own user document.
+    match /users/{userId} {
+      allow read, write: if request.auth.uid == userId;
+    }
+
+    // Quiz documents
+    match /quizzes/{quizId} {
+      // Anyone can read a single quiz to take it.
+      allow get: if true;
+      
+      // Users can only list their own quizzes.
+      // The query must include a `where('userId', '==', request.auth.uid)` clause.
+      allow list: if request.auth.uid != null && request.query.where.userId == request.auth.uid;
+
+      // Users can create, update, or delete their own quizzes.
+      allow create, update, delete: if request.auth.uid != null && request.resource.data.userId == request.auth.uid;
+    }
+
+    // Response documents
+    match /responses/{responseId} {
+        // Anyone can submit a response to a quiz.
+        allow create: if true;
+
+        // Only the owner of the quiz can read the responses.
+        allow read: if request.auth.uid != null && get(/databases/$(database)/documents/quizzes/$(resource.data.quizId)).data.userId == request.auth.uid;
+>>>>>>> 0c47b2d8237a13f5be50102fde776b2e972f1c24
     }
   }
 }

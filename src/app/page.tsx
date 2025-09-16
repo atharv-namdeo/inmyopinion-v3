@@ -32,14 +32,14 @@ export default function Home() {
         <TabsContent value="create">
           <Card className="w-full shadow-2xl">
             <CardHeader className="items-center text-center">
-              <div className="rounded-full bg-primary/10 p-3">
-                <Bot className="h-8 w-8 text-primary" />
+              <div className="flex flex-col items-center gap-2">
+                <img src="https://imgpx.com/ji4137b3djuh.png" alt="Logo" className="h-14 w-14 rounded-full border border-primary mx-auto" />
               </div>
               <CardTitle className="mt-4 text-3xl font-headline">
-                Welcome to Feedback Flow
+                InMyOpinion
               </CardTitle>
               <CardDescription className="mt-2 text-lg">
-                Create your own quiz to get personalized, AI-powered feedback from your friends.
+                Create fun, custom quizzes and get honest opinions from your friends. Discover what others think about you, spark conversations, and learn more about yourself!
               </CardDescription>
             </CardHeader>
             <CardContent className="flex flex-col items-center">

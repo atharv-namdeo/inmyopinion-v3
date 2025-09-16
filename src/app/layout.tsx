@@ -8,7 +8,7 @@ import { Suspense } from 'react';
 import { Skeleton } from '@/components/ui/skeleton';
 
 export const metadata: Metadata = {
-  title: 'Feedback Flow',
+  title: 'InMyOpinion',
   description: 'Get personalized feedback on your responses.',
 };
 
@@ -33,6 +33,10 @@ export default function RootLayout({
       </head>
       <body className="font-body antialiased">
         <ClientAuthProvider>
+          <div className="absolute top-4 left-4 z-50 flex items-center gap-3">
+            <img src="https://imgpx.com/ji4137b3djuh.png" alt="Logo" className="h-10 w-10 rounded-full border border-primary" />
+            <span className="text-xl font-bold text-primary">InMyOpinion</span>
+          </div>
           <div className="absolute top-4 right-4 z-50">
             <Suspense fallback={<Skeleton className="h-10 w-10 rounded-full" />}>
               <ProfileButton />

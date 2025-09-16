@@ -197,8 +197,8 @@ export function CreateQuizForm() {
       return;
     }
     
-    // Create a clean version of questions for Firestore
-    const questionsForDb = questions.map(({ id, ...rest }) => rest);
+  // Save questions with their unique IDs
+  const questionsForDb = questions;
 
     const quizData: Omit<Quiz, 'id' | 'createdAt'> & { createdAt: any } = {
       userId: user.uid,

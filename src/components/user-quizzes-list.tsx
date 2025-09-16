@@ -12,13 +12,50 @@ import { formatDistanceToNow } from 'date-fns';
 import { useToast } from '@/hooks/use-toast';
 import { Skeleton } from './ui/skeleton';
 import { db } from '@/lib/firebase';
-import { collection, query, where, getDocs, orderBy } from 'firebase/firestore';
+import { collection, query, where, getDocs, orderBy, doc, deleteDoc } from 'firebase/firestore';
+  const handleDeleteQuiz = async (quizId: string) => {
+    if (!window.confirm('Are you sure you want to delete this quiz? This action cannot be undone.')) return;
+    try {
+      await deleteDoc(doc(db, 'quizzes', quizId));
+      setQuizzes((prev) => prev.filter((quiz) => quiz.id !== quizId));
+      toast({
+        title: 'Quiz Deleted',
+        description: 'Your quiz has been deleted successfully.'
+      });
+    } catch (error: any) {
+      console.error('Error deleting quiz:', error);
+      toast({
+        variant: 'destructive',
+        title: 'Delete Failed',
+        description: 'Could not delete the quiz. Please try again.'
+      });
+    }
+  } 
 
 export function UserQuizzesList() {
   const [quizzes, setQuizzes] = useState<Quiz[]>([]);
   const [loading, setLoading] = useState(true);
   const { user, loading: authLoading } = useAuth();
   const { toast } = useToast();
+
+  const handleDeleteQuiz = async (quizId: string) => {
+    if (!window.confirm('Are you sure you want to delete this quiz? This action cannot be undone.')) return;
+    try {
+      await deleteDoc(doc(db, 'quizzes', quizId));
+      setQuizzes((prev: Quiz[]) => prev.filter((quiz: Quiz) => quiz.id !== quizId));
+      toast({
+        title: 'Quiz Deleted',
+        description: 'Your quiz has been deleted successfully.'
+      });
+    } catch (error: any) {
+      console.error('Error deleting quiz:', error);
+      toast({
+        variant: 'destructive',
+        title: 'Delete Failed',
+        description: 'Could not delete the quiz. Please try again.'
+      });
+    }
+  };
 
   const fetchQuizzes = useCallback(async (uid: string) => {
     setLoading(true);
@@ -147,13 +184,16 @@ export function UserQuizzesList() {
                       <Eye className="mr-2 h-4 w-4" /> Edit
                     </Link>
                   </Button>
-                   <Button variant="outline" size="sm" onClick={() => copyToClipboard(getQuizLink(quiz.id))} className='w-full sm:w-auto justify-center'>
-                      <Share2 className="mr-2 h-4 w-4" /> Copy Link
-                    </Button>
+                  <Button variant="outline" size="sm" onClick={() => copyToClipboard(getQuizLink(quiz.id))} className='w-full sm:w-auto justify-center'>
+                    <Share2 className="mr-2 h-4 w-4" /> Copy Link
+                  </Button>
                   <Button asChild variant="secondary" size="sm" className='w-full sm:w-auto justify-center'>
                     <Link href={`/results/${quiz.id}`}>
                       <BarChart2 className="mr-2 h-4 w-4" /> Results
                     </Link>
+                  </Button>
+                  <Button variant="destructive" size="sm" onClick={() => handleDeleteQuiz(quiz.id)} className='w-full sm:w-auto justify-center'>
+                    Delete
                   </Button>
                 </div>
               </li>
