@@ -1,5 +1,6 @@
 
 import { initializeApp, getApps, getApp } from 'firebase/app';
+import { getAnalytics } from 'firebase/analytics';
 import { getAuth } from 'firebase/auth';
 import { getFirestore } from 'firebase/firestore';
 
@@ -11,13 +12,19 @@ const firebaseConfig = {
   storageBucket: 'studio-8327262984-8cd3b.firebasestorage.app',
   messagingSenderId: '883769836306',
   appId: '1:883769836306:web:96ebbb1eb96c9ef15ce9cb',
-  measurementId: '', // optional
+  measurementId: 'G-Z58SVD0YG0',
 };
 
 // Initialize Firebase
+
 const app = !getApps().length ? initializeApp(firebaseConfig) : getApp();
 const auth = getAuth(app);
 const db = getFirestore(app);
 
+// Initialize Analytics only in browser (not SSR)
+let analytics: ReturnType<typeof getAnalytics> | undefined = undefined;
+if (typeof window !== 'undefined') {
+  analytics = getAnalytics(app);
+}
 
-export { app, auth, db };
+export { app, auth, db, analytics };

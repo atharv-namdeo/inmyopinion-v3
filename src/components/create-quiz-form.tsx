@@ -29,6 +29,7 @@ export function CreateQuizForm() {
 
   const [quizTitle, setQuizTitle] = useState('My IMO');
   const [questions, setQuestions] = useState<Question[]>([]);
+  const [endMessage, setEndMessage] = useState('Thanks for the feedback');
   const [newQuestionText, setNewQuestionText] = useState('');
   const [newQuestionType, setNewQuestionType] = useState<'multiple-choice' | 'sliding-bar'>('multiple-choice');
   const [options, setOptions] = useState<string[]>(['', '']);
@@ -49,6 +50,7 @@ export function CreateQuizForm() {
           setQuizId(quizDoc.id);
           setQuizTitle(existingQuiz.title);
           setQuestions(existingQuiz.questions.map((q, i) => ({ ...q, id: `db-${i}-${Date.now()}` })));
+          setEndMessage(existingQuiz.endMessage || 'Thanks for the feedback');
         } else {
            toast({
             variant: "destructive",
@@ -204,7 +206,8 @@ export function CreateQuizForm() {
       userId: user.uid,
       title: quizTitle || 'My Feedback Quiz',
       questions: questionsForDb,
-      createdAt: serverTimestamp()
+      createdAt: serverTimestamp(),
+      endMessage: endMessage || 'Thanks for the feedback',
     };
 
     try {
@@ -387,15 +390,28 @@ export function CreateQuizForm() {
           </CardDescription>
         </CardHeader>
         <CardContent className="space-y-6">
+
           <div className="space-y-2">
-             <Label htmlFor="quiz-title" className="text-lg font-semibold">IMO Title</Label>
-             <Input 
-                id="quiz-title"
-                value={quizTitle}
-                onChange={(e) => setQuizTitle(e.target.value)}
-                placeholder="E.g. How well do you know me?"
-                className="text-lg"
-              />
+            <Label htmlFor="quiz-title" className="text-lg font-semibold">IMO Title</Label>
+            <Input 
+              id="quiz-title"
+              value={quizTitle}
+              onChange={(e) => setQuizTitle(e.target.value)}
+              placeholder="E.g. How well do you know me?"
+              className="text-lg"
+            />
+          </div>
+
+          <div className="space-y-2">
+            <Label htmlFor="end-message" className="text-lg font-semibold">End Message</Label>
+            <Input
+              id="end-message"
+              value={endMessage}
+              onChange={(e) => setEndMessage(e.target.value)}
+              placeholder="Thanks for the feedback"
+              className="text-base"
+            />
+            <p className="text-xs text-muted-foreground">This message will be shown at the end of the quiz. Leave blank for default.</p>
           </div>
 
           <div className="space-y-4 rounded-lg border p-4">

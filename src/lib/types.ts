@@ -16,6 +16,7 @@ export type Quiz = {
   title: string;
   questions: Question[];
   createdAt: Timestamp;
+  endMessage?: string; // Optional custom end message for quiz completion
 };
 
 export type UserProfile = {

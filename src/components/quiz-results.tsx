@@ -155,29 +155,30 @@ export function QuizResults({ quizId }: Props) {
             </CardContent>
         </Card>
       ) : (
-    quiz.questions.map((question, index) => (
-      <div key={question.id}>
-        <Card>
-          <CardHeader>
-            <CardTitle className="text-xl">Question {index + 1}: <span className="font-normal">{question.text}</span></CardTitle>
-          </CardHeader>
-          <CardContent>
-            {question.type === 'multiple-choice' && question.options ? (
-              <MultipleChoiceResult question={question} answers={getAnswersForQuestion(question.id)} />
-            ) : (
-              <SlidingBarResult question={question} answers={getAnswersForQuestion(question.id)} />
-            )}
-            <div className="mt-4 flex justify-end">
-              <Button variant="secondary" onClick={() => handleShareStory(question, index)}>
-                Share as Story
-              </Button>
-            </div>
-          </CardContent>
-        </Card>
-        {/* Hidden story preview for image capture */}
-        <div style={{ position: 'absolute', left: '-9999px', top: 0, width: 1080, height: 1920 }}>
-          <StoryCaptureWrapper ref={el => { storyRefs.current[index] = el; }}>
-            <div style={{
+    <>
+      {quiz.questions.map((question, index) => (
+        <div key={question.id}>
+          <Card>
+            <CardHeader>
+              <CardTitle className="text-xl">Question {index + 1}: <span className="font-normal">{question.text}</span></CardTitle>
+            </CardHeader>
+            <CardContent>
+              {question.type === 'multiple-choice' && question.options ? (
+                <MultipleChoiceResult question={question} answers={getAnswersForQuestion(question.id)} />
+              ) : (
+                <SlidingBarResult question={question} answers={getAnswersForQuestion(question.id)} />
+              )}
+              <div className="mt-4 flex justify-end">
+                <Button variant="secondary" onClick={() => handleShareStory(question, index)}>
+                  Share as Story
+                </Button>
+              </div>
+            </CardContent>
+          </Card>
+          {/* Hidden story preview for image capture */}
+          <div style={{ position: 'absolute', left: '-9999px', top: 0, width: 1080, height: 1920 }}>
+            <StoryCaptureWrapper ref={el => { storyRefs.current[index] = el; }}>
+              <div style={{
               width: '100%',
               maxWidth: 900,
               margin: '0 auto',
@@ -315,8 +316,18 @@ export function QuizResults({ quizId }: Props) {
           </StoryCaptureWrapper>
         </div>
       </div>
-        ))
-      )}
+
+        ))}
+        {/* Show end message after all questions */}
+        <Card className="mt-8">
+          <CardContent className="py-8 text-center">
+            <div className="text-2xl font-semibold">
+              {quiz.endMessage?.trim() ? quiz.endMessage : 'Thanks for the feedback'}
+            </div>
+          </CardContent>
+        </Card>
+      </>
+    )}
 
     </div>
   );
