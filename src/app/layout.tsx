@@ -6,6 +6,7 @@ import { ClientAuthProvider } from '@/hooks/use-auth';
 import { ProfileButton } from '@/components/profile-button';
 import { Suspense } from 'react';
 import { Skeleton } from '@/components/ui/skeleton';
+import { Analytics } from '@vercel/analytics/react';
 
 export const metadata: Metadata = {
   title: 'InMyOpinion',
@@ -45,6 +46,7 @@ export default function RootLayout({
           {children}
           <Toaster />
         </ClientAuthProvider>
+        <Analytics />
       </body>
     </html>
   );
