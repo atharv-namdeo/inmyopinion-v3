@@ -112,9 +112,9 @@ export function UserQuizzesList() {
      return (
         <Card>
             <CardHeader>
-                <CardTitle>Your Quizzes</CardTitle>
+                <CardTitle>Your IMOs</CardTitle>
                 <CardDescription>
-                  Loading your quizzes...
+                  Loading your IMOs...
                 </CardDescription>
             </CardHeader>
             <CardContent className="space-y-4">
@@ -131,9 +131,9 @@ export function UserQuizzesList() {
     return (
         <Card>
            <CardHeader>
-               <CardTitle>Your Quizzes</CardTitle>
+               <CardTitle>Your IMOs</CardTitle>
                <CardDescription>
-                 Please log in to view your quizzes.
+                 Please log in to view your IMOs.
                </CardDescription>
            </CardHeader>
            <CardContent className="text-center p-8 border-2 border-dashed rounded-lg">
@@ -149,9 +149,9 @@ export function UserQuizzesList() {
   return (
     <Card>
       <CardHeader>
-        <CardTitle>Your Quizzes</CardTitle>
+        <CardTitle>Your IMOs</CardTitle>
         <CardDescription>
-          Quizzes you've created will appear here.
+          IMOs you've created will appear here.
         </CardDescription>
       </CardHeader>
       <CardContent>

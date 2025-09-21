@@ -59,7 +59,8 @@ export function ResultsDisplay() {
         <div className="mx-auto mb-4 flex h-14 w-14 items-center justify-center rounded-full bg-primary/10">
           <CheckCircle className="h-8 w-8 text-primary" />
         </div>
-        <CardTitle className="text-3xl font-headline">Quiz Submitted!</CardTitle>
+        <div className="mt-6" />
+  <CardTitle className="text-3xl font-headline mt-8">IMO Results</CardTitle>
         <CardDescription>
           Your responses have been recorded.
         </CardDescription>
@@ -70,7 +71,7 @@ export function ResultsDisplay() {
       <CardFooter className="flex-col items-center gap-4 border-t px-6 py-4">
         <Button onClick={handleCreateOwnQuiz} size="lg" className="w-full max-w-xs">
           <PlusCircle className="mr-2 h-4 w-4" />
-          Make Your Own Quiz
+          Make Your Own IMO
         </Button>
       </CardFooter>
     </Card>

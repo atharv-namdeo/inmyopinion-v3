@@ -27,7 +27,7 @@ export function CreateQuizForm() {
   
   const [quizId, setQuizId] = useState<string | null>(null);
 
-  const [quizTitle, setQuizTitle] = useState('My Feedback Quiz');
+  const [quizTitle, setQuizTitle] = useState('My IMO');
   const [questions, setQuestions] = useState<Question[]>([]);
   const [newQuestionText, setNewQuestionText] = useState('');
   const [newQuestionType, setNewQuestionType] = useState<'multiple-choice' | 'sliding-bar'>('multiple-choice');
@@ -192,7 +192,7 @@ export function CreateQuizForm() {
       toast({
         variant: "destructive",
         title: "Error",
-        description: "Please add at least one question to your quiz.",
+        description: "Please add at least one question to your IMO.",
       });
       return;
     }
@@ -220,13 +220,13 @@ export function CreateQuizForm() {
         }
 
         toast({
-            title: quizId ? "Quiz Updated!" : "Quiz Saved!",
-            description: "Your quiz has been successfully saved.",
+            title: quizId ? "IMO Updated!" : "IMO Saved!",
+            description: "Your IMO has been successfully saved.",
         });
         return newQuizId;
     } catch (error) {
         console.error("Error saving quiz: ", error);
-        toast({ variant: "destructive", title: "Save failed", description: "There was an error saving your quiz." });
+        toast({ variant: "destructive", title: "Save failed", description: "There was an error saving your IMO." });
     }
   };
 
@@ -237,7 +237,7 @@ export function CreateQuizForm() {
     const url = `${window.location.origin}/quiz?id=${newQuizId}`;
     setQuizLink(url);
     setIsQuizCreated(true);
-    copyToClipboard(url, "The quiz link has been copied to your clipboard.");
+    copyToClipboard(url, "The IMO link has been copied to your clipboard.");
   };
 
   const copyToClipboard = (text: string, message: string) => {
@@ -262,56 +262,133 @@ export function CreateQuizForm() {
             <div className="rounded-full bg-primary/10 p-4">
                 <CheckCircle className="h-10 w-10 text-primary" />
             </div>
-            <CardTitle className="text-3xl font-headline mt-4">{quizId ? 'Quiz Updated!' : 'Quiz Created!'}</CardTitle>
-            <CardDescription>Your quiz is ready to be shared with your friends.</CardDescription>
+            <CardTitle className="text-3xl font-headline mt-4">{quizId ? 'IMO Updated!' : 'IMO Created!'}</CardTitle>
+            <CardDescription>Your IMO is ready to be shared with your friends.</CardDescription>
         </CardHeader>
         <CardContent className="space-y-4 text-center">
             <p className="font-semibold">Share this link:</p>
             <div className="flex items-center gap-2 rounded-lg border bg-muted p-2">
                 <Input readOnly value={quizLink} className="flex-1 border-0 bg-transparent text-base shadow-none focus-visible:ring-0"/>
-                <Button onClick={() => copyToClipboard(quizLink, "The quiz link has been copied to your clipboard.")}>
+                <Button onClick={() => copyToClipboard(quizLink, "The IMO link has been copied to your clipboard.")}> 
                     <Share2 className="mr-2 h-4 w-4"/> Copy Link
                 </Button>
             </div>
+            <Button
+              className="w-full max-w-xs mx-auto mt-4 bg-gradient-to-r from-purple-600 to-purple-900 text-white font-bold py-3 rounded-lg flex items-center justify-center gap-2"
+              onClick={() => {
+                const canvas = document.createElement('canvas');
+                canvas.width = 1080;
+                canvas.height = 1920;
+                const ctx = canvas.getContext('2d');
+                if (!ctx) return;
+                // Draw vertical gradient background (lighter at top, darker at bottom)
+                const gradient = ctx.createLinearGradient(0, 0, 0, 1920);
+                gradient.addColorStop(0, '#4b176a'); // lighter purple at top
+                gradient.addColorStop(1, '#1a0022'); // darker purple at bottom
+                ctx.fillStyle = gradient;
+                ctx.fillRect(0, 0, 1080, 1920);
+                // Draw dark purple border
+                ctx.strokeStyle = '#1a0022';
+                ctx.lineWidth = 32;
+                ctx.strokeRect(16, 16, 1048, 1888);
+                // Draw smaller purple circle top left
+                ctx.beginPath();
+                ctx.arc(120, 60, 90, 0, 2 * Math.PI);
+                ctx.fillStyle = '#a259ff';
+                ctx.globalAlpha = 0.7;
+                ctx.fill();
+                ctx.globalAlpha = 1;
+                // Draw logo at top center
+                const logo = new Image();
+                logo.src = '/logo.png';
+                logo.onload = () => {
+                  ctx.drawImage(logo, 440, 320, 200, 200);
+                  // Quiz title (shifted further down)
+                  ctx.font = 'bold 90px Arial';
+                  ctx.fillStyle = '#fff';
+                  ctx.textAlign = 'center';
+                  ctx.fillText(quizTitle || 'My IMO', 540, 650);
+                  // Description text (shifted further down)
+                  ctx.font = 'bold 60px Arial';
+                  ctx.fillText('Answer to My IMO!!', 540, 820);
+                  // Draw three arrows (shifted further down)
+                  ctx.strokeStyle = '#fff';
+                  ctx.lineWidth = 14;
+                  // Left arrow
+                  ctx.beginPath();
+                  ctx.moveTo(390, 870); ctx.lineTo(390, 1020); ctx.lineTo(360, 990);
+                  ctx.moveTo(390, 1020); ctx.lineTo(420, 990);
+                  ctx.stroke();
+                  // Middle arrow
+                  ctx.beginPath();
+                  ctx.moveTo(540, 870); ctx.lineTo(540, 1020); ctx.lineTo(510, 990);
+                  ctx.moveTo(540, 1020); ctx.lineTo(570, 990);
+                  ctx.stroke();
+                  // Right arrow
+                  ctx.beginPath();
+                  ctx.moveTo(690, 870); ctx.lineTo(690, 1020); ctx.lineTo(660, 990);
+                  ctx.moveTo(690, 1020); ctx.lineTo(720, 990);
+                  ctx.stroke();
+                  // 'InMyOpinion' at bottom
+                  ctx.font = 'bold 54px Arial';
+                  ctx.fillStyle = '#fff';
+                  ctx.textAlign = 'center';
+                  ctx.fillText('InMyOpinion', 540, 1850);
+                  // Download image
+                  const url = canvas.toDataURL('image/png');
+                  const a = document.createElement('a');
+                  a.href = url;
+                  a.download = 'instagram-story.png';
+                  document.body.appendChild(a);
+                  a.click();
+                  document.body.removeChild(a);
+                };
+              }}
+            >
+              <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="lucide lucide-instagram mr-2 h-5 w-5"><rect x="2" y="2" width="20" height="20" rx="5"/><path d="M16 11.37A4 4 0 1 1 12.63 8 4 4 0 0 1 16 11.37z"/><line x1="17.5" y1="6.5" x2="17.5" y2="6.5"/></svg>
+              Put in Your Instagram Story
+            </Button>
         </CardContent>
          <CardFooter className="flex-col sm:flex-row justify-center gap-2">
             <Button variant="outline" onClick={() => router.push('/')}>
                 <Home className="mr-2 h-4 w-4" /> Go to Home
             </Button>
-            <Button onClick={() => {
-                setIsQuizCreated(false);
-                setQuizId(null);
-                setQuizTitle('My Feedback Quiz');
-                setQuestions([]);
-                router.push('/create');
-            }}>
-                <PlusCircle className="mr-2 h-4 w-4" /> Create a New Quiz
-            </Button>
+      <Button onClick={() => {
+        setIsQuizCreated(false);
+        setQuizId(null);
+        setQuizTitle('My IMO');
+        setQuestions([]);
+        router.push('/create');
+      }}>
+        <PlusCircle className="mr-2 h-4 w-4" /> Create IMO
+      </Button>
         </CardFooter>
       </Card>
     )
   }
 
   return (
-    <div className="w-full max-w-4xl space-y-8">
-      <div className="flex justify-start">
-        <Button variant="outline" onClick={() => router.push('/')}>
+    <div className="w-full max-w-4xl space-y-8 mx-auto px-2 sm:px-4">
+  <Card className="shadow-2xl mt-16">
+      {/* Back to Home button below card, mobile-friendly */}
+      <div className="flex justify-center mt-6">
+        <Button variant="outline" onClick={() => router.push('/')}
+          className="w-full max-w-xs sm:w-auto flex justify-center items-center">
           <Home className="mr-2 h-4 w-4" /> Back to Home
         </Button>
       </div>
-      <Card className="shadow-2xl">
         <CardHeader>
           <CardTitle className="text-3xl font-headline flex items-center gap-2">
             <PlusCircle className="text-primary" />
-            {quizId ? "Edit Your Quiz" : "Create Your Quiz"}
+            {quizId ? "Edit Your IMO" : "Create Your IMO"}
           </CardTitle>
           <CardDescription>
-            {quizId ? "Edit the title and questions of your quiz." : "Add a title and some questions, or choose from our suggestions below."}
+            {quizId ? "Edit the title and questions of your IMO." : "Add a title and some questions, or choose from our suggestions below."}
           </CardDescription>
         </CardHeader>
         <CardContent className="space-y-6">
           <div className="space-y-2">
-             <Label htmlFor="quiz-title" className="text-lg font-semibold">Quiz Title</Label>
+             <Label htmlFor="quiz-title" className="text-lg font-semibold">IMO Title</Label>
              <Input 
                 id="quiz-title"
                 value={quizTitle}
@@ -339,7 +416,7 @@ export function CreateQuizForm() {
                   <SelectItem value="sliding-bar"><SlidersHorizontal className="inline-block mr-2 h-4 w-4" />Sliding Bar</SelectItem>
                 </SelectContent>
               </Select>
-               <Button onClick={addQuestion} className="w-full sm:w-auto">
+                <Button onClick={addQuestion} className="w-full sm:w-auto">
                 <PlusCircle className="mr-2 h-4 w-4" /> Add Question
               </Button>
             </div>
@@ -373,7 +450,7 @@ export function CreateQuizForm() {
           <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }}>
             <Card>
               <CardHeader>
-                <CardTitle>Your Quiz Questions ({questions.length})</CardTitle>
+                <CardTitle>Your IMO Questions ({questions.length})</CardTitle>
               </CardHeader>
               <CardContent className="space-y-4">
                 {questions.map((q, index) => (
@@ -454,6 +531,117 @@ export function CreateQuizForm() {
                             ))}
                           </div>
                         )}
+                        {q.type === 'multiple-choice' && q.options && (
+                          <div className="mt-4 flex justify-end">
+                            <Button
+                              variant="secondary"
+                              onClick={() => {
+                                const canvas = document.createElement('canvas');
+                                canvas.width = 1080;
+                                canvas.height = 1920;
+                                const ctx = canvas.getContext('2d');
+                                if (!ctx) return;
+                                // Background
+                                const gradient = ctx.createLinearGradient(0, 0, 0, 1920);
+                                gradient.addColorStop(0, '#3a084c');
+                                gradient.addColorStop(1, '#21002c');
+                                ctx.fillStyle = gradient;
+                                ctx.fillRect(0, 0, 1080, 1920);
+                                // Rounded corners effect
+                                ctx.save();
+                                ctx.globalAlpha = 0.3;
+                                ctx.beginPath();
+                                ctx.arc(0, 0, 180, 0, Math.PI * 2);
+                                ctx.arc(1080, 0, 120, 0, Math.PI * 2);
+                                ctx.arc(0, 1920, 120, 0, Math.PI * 2);
+                                ctx.arc(1080, 1920, 180, 0, Math.PI * 2);
+                                ctx.fillStyle = '#a259ff';
+                                ctx.fill();
+                                ctx.restore();
+                                // Logo
+                                const logo = new Image();
+                                logo.src = '/logo.png';
+                                logo.onload = () => {
+                                  ctx.save();
+                                  ctx.shadowColor = '#000';
+                                  ctx.shadowBlur = 32;
+                                  ctx.drawImage(logo, 440, 120, 200, 200);
+                                  ctx.restore();
+                                  // Quiz title
+                                  ctx.font = 'bold 80px Arial';
+                                  ctx.fillStyle = '#fff';
+                                  ctx.textAlign = 'center';
+                                  ctx.fillText(quizTitle || 'My Feedback Quiz', 540, 380);
+                                  // Question text
+                                  ctx.font = 'bold 48px Arial';
+                                  ctx.fillText(q.text, 540, 450);
+                                  // Donut chart
+                                  const centerX = 540, centerY = 700, outerR = 220, innerR = 120;
+                                  // Simulate responses for demo (replace with actual response data if available)
+                                  const responseCounts = q.options.map(() => Math.floor(Math.random() * 10));
+                                  const totalResponses = responseCounts.reduce((a, b) => a + b, 0) || 1;
+                                  const percentages = responseCounts.map(c => ((c / totalResponses) * 100).toFixed(1) + '%');
+                                  const colors = ['#ffc1d3', '#ffe066', '#ffb347', '#a0e7e5', '#b4f8c8', '#fbe7c6'];
+                                  let startAngle = -Math.PI / 2;
+                                  for (let i = 0; i < q.options.length; i++) {
+                                    const angle = (responseCounts[i] / totalResponses) * Math.PI * 2;
+                                    ctx.beginPath();
+                                    ctx.arc(centerX, centerY, outerR, startAngle, startAngle + angle);
+                                    ctx.arc(centerX, centerY, innerR, startAngle + angle, startAngle, true);
+                                    ctx.closePath();
+                                    ctx.fillStyle = colors[i % colors.length];
+                                    ctx.fill();
+                                    startAngle += angle;
+                                  }
+                                  // Answer breakdown box
+                                  ctx.save();
+                                  ctx.globalAlpha = 0.95;
+                                  ctx.fillStyle = '#1a0022';
+                                  ctx.beginPath();
+                                  ctx.moveTo(200, 950);
+                                  ctx.lineTo(880, 950);
+                                  ctx.quadraticCurveTo(1000, 950, 1000, 1070);
+                                  ctx.lineTo(1000, 1200);
+                                  ctx.quadraticCurveTo(1000, 1300, 880, 1300);
+                                  ctx.lineTo(200, 1300);
+                                  ctx.quadraticCurveTo(80, 1300, 80, 1200);
+                                  ctx.lineTo(80, 1070);
+                                  ctx.quadraticCurveTo(80, 950, 200, 950);
+                                  ctx.closePath();
+                                  ctx.fill();
+                                  ctx.restore();
+                                  // Answer breakdown text
+                                  for (let i = 0; i < q.options.length; i++) {
+                                    // Dot
+                                    ctx.beginPath();
+                                    ctx.arc(220, 1020 + i * 55, 18, 0, Math.PI * 2);
+                                    ctx.fillStyle = colors[i % colors.length];
+                                    ctx.fill();
+                                    // Label
+                                    ctx.font = 'bold 38px Arial';
+                                    ctx.fillStyle = '#fff';
+                                    ctx.textAlign = 'left';
+                                    ctx.fillText(q.options[i], 260, 1032 + i * 55);
+                                    // Percent
+                                    ctx.textAlign = 'right';
+                                    ctx.fillText(percentages[i], 960, 1032 + i * 55);
+                                  }
+                                  // Download image
+                                  const url = canvas.toDataURL('image/png');
+                                  const a = document.createElement('a');
+                                  a.href = url;
+                                  a.download = 'instagram-story.png';
+                                  document.body.appendChild(a);
+                                  a.click();
+                                  document.body.removeChild(a);
+                                };
+                              }}
+                            >
+                              <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="lucide lucide-instagram mr-2 h-5 w-5"><rect x="2" y="2" width="20" height="20" rx="5"/><path d="M16 11.37A4 4 0 1 1 12.63 8 4 4 0 0 1 16 11.37z"/><line x1="17.5" y1="6.5" x2="17.5" y2="6.5"/></svg>
+                              Share as Story
+                            </Button>
+                          </div>
+                        )}
                         {q.type === 'sliding-bar' && (
                             <div className="mt-4 flex items-center gap-2 pl-8">
                                 <span className="text-sm text-muted-foreground">0</span>
@@ -473,7 +661,7 @@ export function CreateQuizForm() {
                   </Button>
                    <Button onClick={saveQuiz} size="lg" variant="secondary" disabled={questions.length === 0}>
                     <Save className="mr-2 h-5 w-5" />
-                    {quizId ? 'Update Quiz' : 'Save Quiz'}
+                    {quizId ? 'Update IMO' : 'Save IMO'}
                   </Button>
               </CardFooter>
             </Card>

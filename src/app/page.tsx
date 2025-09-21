@@ -26,8 +26,8 @@ export default function Home() {
     <main className="flex min-h-screen w-full flex-col items-center justify-center bg-background p-4">
       <Tabs defaultValue="create" className="w-full max-w-2xl">
         <TabsList className="grid w-full grid-cols-2">
-          <TabsTrigger value="create">Create New Quiz</TabsTrigger>
-          <TabsTrigger value="quizzes">Your Quizzes</TabsTrigger>
+          <TabsTrigger value="create">Create New IMO</TabsTrigger>
+          <TabsTrigger value="quizzes">Your IMOs</TabsTrigger>
         </TabsList>
         <TabsContent value="create">
           <Card className="w-full shadow-2xl">
@@ -48,7 +48,7 @@ export default function Home() {
               </p>
               <Button onClick={handleCreateQuizClick} className="w-full max-w-xs" size="lg">
                   <PlusCircle className="mr-2 h-5 w-5" />
-                  Create a New Quiz
+                  Create a New IMO
               </Button>
             </CardContent>
           </Card>

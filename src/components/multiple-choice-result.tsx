@@ -12,11 +12,16 @@ type Props = {
 };
 
 const CHART_COLORS = [
-  'hsl(var(--chart-1))',
-  'hsl(var(--chart-2))',
-  'hsl(var(--chart-3))',
-  'hsl(var(--chart-4))',
-  'hsl(var(--chart-5))',
+    '#7C3AED', // purple
+    '#F59E42', // orange
+    '#10B981', // green
+    '#F43F5E', // pink/red
+    '#3B82F6', // blue
+    '#FBBF24', // yellow
+    '#6366F1', // indigo
+    '#34D399', // teal
+    '#F472B6', // light pink
+    '#60A5FA', // light blue
 ];
 
 export function MultipleChoiceResult({ question, answers }: Props) {
@@ -61,6 +66,8 @@ export function MultipleChoiceResult({ question, answers }: Props) {
                         cy="50%"
                         outerRadius={100}
                         labelLine={false}
+                        isAnimationActive={false}
+                        animationDuration={0}
                         label={({ cx, cy, midAngle, innerRadius, outerRadius, percent }) => {
                             const radius = innerRadius + (outerRadius - innerRadius) * 0.5;
                             const x = cx + radius * Math.cos(-midAngle * (Math.PI / 180));
