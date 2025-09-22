@@ -34,7 +34,7 @@ export default function LoginPage() {
       toast({
         variant: "destructive",
         title: 'Login Failed',
-        description: "Invalid username or password.",
+        description: "Account does not Exists or Invalid username or password. Please Register",
       });
     } finally {
       setLoading(false);
