@@ -11,7 +11,7 @@ export const StoryCaptureWrapper = React.forwardRef<HTMLDivElement, { children: 
       style={{
         width: 1080,
         height: 1920,
-        backgroundColor: '#1f1f2cff',
+        backgroundColor: '#0b0a09',
         borderRadius: 48,
         overflow: 'hidden',
         position: 'relative',

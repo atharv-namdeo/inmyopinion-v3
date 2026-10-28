@@ -32,3 +32,39 @@ export type QuizResponse = {
     answers: Answers;
     createdAt: string;
 }
+
+// group spill (anonymous voting and roasts among a named group)
+
+export type GroupQuestionType = 'member_pick' | 'behavior_roast' | 'short_answer';
+
+export type GroupQuestion = {
+    id: string;
+    text: string; // e.g. "who's most likely to ghost you?"
+    type?: GroupQuestionType;
+};
+
+export type Group = {
+    id: string;
+    userId: string;
+    name: string;            // e.g. "the squad"
+    members: string[];       // names of everyone in the group
+    questions: GroupQuestion[];
+    createdAt: Timestamp;
+};
+
+export type RoastAnswer = {
+    targetMember?: string;
+    text?: string;
+    allMembers?: Record<string, string>; // memberName -> roast text
+};
+
+// A single person's anonymous ballot.
+export type GroupVote = {
+    id: string;
+    groupId: string;
+    voterName?: string;
+    picks: Record<string, string>; // questionId -> member name
+    roasts?: Record<string, RoastAnswer>; // questionId -> roast details
+    shortAnswers?: Record<string, string>; // questionId -> text answer
+    createdAt: string;
+};

@@ -2,37 +2,58 @@ rules_version = '2';
 
 service cloud.firestore {
   match /databases/{database}/documents {
-<<<<<<< HEAD
-    match /{document=**} {
-      allow read, write: if true;
-=======
 
-    // Users can only read and write to their own user document.
+    // Usernames are read openly because the sign-up flow checks username
+    // uniqueness BEFORE the user is authenticated. Writes are restricted to
+    // the owner of the document.
     match /users/{userId} {
-      allow read, write: if request.auth.uid == userId;
+      allow read: if true;
+      allow write: if request.auth != null && request.auth.uid == userId;
     }
 
-    // Quiz documents
+    // Quizzes
     match /quizzes/{quizId} {
-      // Anyone can read a single quiz to take it.
+      // Anyone with the link can read a quiz to answer it.
       allow get: if true;
-      
-      // Users can only list their own quizzes.
-      // The query must include a `where('userId', '==', request.auth.uid)` clause.
-      allow list: if request.auth.uid != null && request.query.where.userId == request.auth.uid;
-
-      // Users can create, update, or delete their own quizzes.
-      allow create, update, delete: if request.auth.uid != null && request.resource.data.userId == request.auth.uid;
+      // Any signed-in user may list (the client always scopes to its own uid).
+      allow list: if request.auth != null;
+      // Only the owner may create / edit / delete their quiz.
+      allow create, update, delete:
+        if request.auth != null && request.resource.data.userId == request.auth.uid;
     }
 
-    // Response documents
+    // Responses
     match /responses/{responseId} {
-        // Anyone can submit a response to a quiz.
-        allow create: if true;
+      // Anyone (anonymous) can submit an answer.
+      allow create: if true;
+      // Only the owning quiz's author can read responses.
+      allow read:
+        if request.auth != null
+        && get(/databases/$(database)/documents/quizzes/$(resource.data.quizId)).data.userId == request.auth.uid;
+    }
 
-        // Only the owner of the quiz can read the responses.
-        allow read: if request.auth.uid != null && get(/databases/$(database)/documents/quizzes/$(resource.data.quizId)).data.userId == request.auth.uid;
->>>>>>> 0c47b2d8237a13f5be50102fde776b2e972f1c24
+    // Groups (anonymous "who's most ___" voting among a named group)
+    match /groups/{groupId} {
+      // Anyone with the link can read a group — both to vote and to see results.
+      allow get: if true;
+      // Any signed-in user may list (the client scopes to its own uid).
+      allow list: if request.auth != null;
+      // Only the owner may create their group...
+      allow create:
+        if request.auth != null && request.resource.data.userId == request.auth.uid;
+      // Owner may edit or delete it; anyone with the link can add a member to the squad
+      allow update:
+        if (request.auth != null && resource.data.userId == request.auth.uid)
+        || request.resource.data.diff(resource.data).affectedKeys().hasOnly(['members']);
+      allow delete:
+        if request.auth != null && resource.data.userId == request.auth.uid;
+    }
+
+    // Group votes — anonymous ballots. Results are public (link-based),
+    // so anyone can both cast a vote and read the tallied votes.
+    match /groupVotes/{voteId} {
+      allow create: if true;
+      allow read: if true;
     }
   }
 }

@@ -2,75 +2,89 @@
 @tailwind components;
 @tailwind utilities;
 
+/*
+  VERDIKT — editorial kinetic design system
+  black canvas · cream ink · ember accent · Fraunces + Space Grotesk
+*/
+
 @layer base {
   :root {
-    --background: 0 0% 100%;
-    --foreground: 0 0% 3.9%;
+    /* LIGHT — bright, playful, maximalist. Sunny cream canvas + candy accents. */
+    --background: 42 90% 97%;      /* sunny cream */
+    --foreground: 25 40% 12%;      /* warm near-black */
     --card: 0 0% 100%;
-    --card-foreground: 0 0% 3.9%;
+    --card-foreground: 25 40% 12%;
     --popover: 0 0% 100%;
-    --popover-foreground: 0 0% 3.9%;
-    --primary: 36 100% 50%;
-    --primary-foreground: 0 0% 10%;
-    --secondary: 0 0% 96.1%;
-    --secondary-foreground: 0 0% 9%;
-    --muted: 0 0% 96.1%;
-    --muted-foreground: 0 0% 45.1%;
-    --accent: 36 100% 65%;
-    --accent-foreground: 0 0% 10%;
-    --destructive: 0 84.2% 60.2%;
-    --destructive-foreground: 0 0% 98%;
-    --border: 0 0% 89.8%;
-    --input: 0 0% 89.8%;
-    --ring: 36 100% 50%;
-    --chart-1: 12 76% 61%;
-    --chart-2: 173 58% 39%;
-    --chart-3: 197 37% 24%;
-    --chart-4: 43 74% 66%;
-    --chart-5: 27 87% 67%;
-    --radius: 0.5rem;
-    --sidebar-background: 0 0% 98%;
-    --sidebar-foreground: 240 5.3% 26.1%;
-    --sidebar-primary: 240 5.9% 10%;
-    --sidebar-primary-foreground: 0 0% 98%;
-    --sidebar-accent: 240 4.8% 95.9%;
-    --sidebar-accent-foreground: 240 5.9% 10%;
-    --sidebar-border: 220 13% 91%;
-    --sidebar-ring: 217.2 91.2% 59.8%;
+    --popover-foreground: 25 40% 12%;
+    --primary: 10 92% 60%;         /* juicy coral */
+    --primary-foreground: 45 90% 99%;
+    --secondary: 40 80% 94%;       /* soft butter panel */
+    --secondary-foreground: 25 40% 12%;
+    --muted: 40 45% 93%;
+    --muted-foreground: 25 15% 42%;
+    --accent: 330 88% 62%;         /* hot pink accent */
+    --accent-foreground: 45 90% 99%;
+    --destructive: 0 82% 58%;
+    --destructive-foreground: 45 90% 99%;
+    --border: 30 30% 87%;
+    --input: 30 28% 88%;
+    --ring: 10 92% 60%;
+    --chart-1: 10 92% 60%;
+    --chart-2: 45 100% 58%;
+    --chart-3: 150 65% 48%;
+    --chart-4: 268 82% 66%;
+    --chart-5: 330 88% 62%;
+    --radius: 1.4rem;             /* extra round = extra friendly */
+
+    /* brand + candy tokens (light) */
+    --ember: 10 92% 60%;
+    --ember-soft: 30 95% 64%;
+    --cream: 42 90% 97%;
+    --ink: 25 40% 12%;
+    --candy-pink: 330 90% 64%;
+    --candy-lime: 96 70% 50%;
+    --candy-blue: 205 95% 60%;
+    --candy-purple: 266 85% 68%;
+    --candy-yellow: 45 100% 58%;
   }
+
   .dark {
-    --background: 0 0% 13%;
-    --foreground: 0 0% 98%;
-    --card: 0 0% 15%;
-    --card-foreground: 0 0% 98%;
-    --popover: 0 0% 13%;
-    --popover-foreground: 0 0% 98%;
-    --primary: 36 100% 50%;
-    --primary-foreground: 0 0% 10%;
-    --secondary: 0 0% 20%;
-    --secondary-foreground: 0 0% 98%;
-    --muted: 0 0% 20%;
-    --muted-foreground: 0 0% 63.9%;
-    --accent: 36 100% 65%;
-    --accent-foreground: 0 0% 10%;
-    --destructive: 0 62.8% 30.6%;
-    --destructive-foreground: 0 0% 98%;
-    --border: 0 0% 25%;
-    --input: 0 0% 25%;
-    --ring: 36 100% 50%;
-    --chart-1: 36 100% 50%;
-    --chart-2: 36 100% 65%;
-    --chart-3: 30 80% 55%;
-    --chart-4: 280 65% 60%;
-    --chart-5: 340 75% 55%;
-    --sidebar-background: 240 5.9% 10%;
-    --sidebar-foreground: 240 4.8% 95.9%;
-    --sidebar-primary: 224.3 76.3% 48%;
-    --sidebar-primary-foreground: 0 0% 100%;
-    --sidebar-accent: 240 3.7% 15.9%;
-    --sidebar-accent-foreground: 240 4.8% 95.9%;
-    --sidebar-border: 240 3.7% 15.9%;
-    --sidebar-ring: 217.2 91.2% 59.8%;
+    /* DARK — Spotify near-black shell + coral accent + candy tiles */
+    --background: 0 0% 7%;         /* #121212 */
+    --foreground: 0 0% 100%;
+    --card: 0 0% 11%;              /* #1c1c1c tiles */
+    --card-foreground: 0 0% 100%;
+    --popover: 0 0% 10%;
+    --popover-foreground: 0 0% 100%;
+    --primary: 12 96% 62%;         /* coral */
+    --primary-foreground: 0 0% 7%;
+    --secondary: 0 0% 16%;         /* #282828 hover */
+    --secondary-foreground: 0 0% 100%;
+    --muted: 0 0% 14%;
+    --muted-foreground: 0 0% 64%;  /* #a7a7a7 */
+    --accent: 330 92% 66%;
+    --accent-foreground: 0 0% 7%;
+    --destructive: 0 82% 62%;
+    --destructive-foreground: 0 0% 100%;
+    --border: 0 0% 18%;
+    --input: 0 0% 18%;
+    --ring: 12 96% 62%;
+    --chart-1: 12 96% 62%;
+    --chart-2: 45 100% 62%;
+    --chart-3: 150 70% 55%;
+    --chart-4: 266 88% 74%;
+    --chart-5: 330 92% 68%;
+
+    /* brand + candy tokens (dark) */
+    --ember: 12 96% 62%;
+    --ember-soft: 30 95% 66%;
+    --cream: 0 0% 100%;
+    --ink: 0 0% 7%;
+    --candy-pink: 330 92% 66%;
+    --candy-lime: 96 70% 52%;
+    --candy-blue: 205 95% 62%;
+    --candy-purple: 266 85% 68%;
+    --candy-yellow: 45 100% 60%;
   }
 }
 
@@ -78,7 +92,362 @@
   * {
     @apply border-border;
   }
+  html {
+    scroll-behavior: smooth;
+    -webkit-font-smoothing: antialiased;
+    text-rendering: optimizeLegibility;
+    background-color: hsl(var(--background));
+    color-scheme: light;
+  }
+  html.dark {
+    color-scheme: dark;
+  }
   body {
-    @apply bg-background text-foreground;
+    @apply text-foreground;
+    background-color: transparent;
+    font-feature-settings: "ss01", "cv01", "cv11";
+    /* clip (not hidden) so it doesn't create a scroll container that would
+       break position: sticky used by the pinned hero */
+    overflow-x: clip;
+    transition: color 0.4s ease;
+  }
+
+  /* Selection */
+  ::selection {
+    background: hsl(var(--primary));
+    color: hsl(var(--primary-foreground));
+  }
+
+  /* Custom scrollbar */
+  ::-webkit-scrollbar {
+    width: 10px;
+    height: 10px;
+  }
+  ::-webkit-scrollbar-track {
+    background: hsl(var(--background));
+  }
+  ::-webkit-scrollbar-thumb {
+    background: hsl(var(--border));
+    border-radius: 999px;
+    border: 2px solid hsl(var(--background));
+  }
+  ::-webkit-scrollbar-thumb:hover {
+    background: hsl(var(--primary) / 0.7);
+  }
+}
+
+@layer components {
+  /* ------------ Playful typography helpers ------------ */
+  .display {
+    font-family: var(--font-display), var(--font-heading), system-ui, sans-serif;
+    letter-spacing: -0.02em;
+    line-height: 0.98;
+  }
+  .grotesk {
+    font-family: var(--font-grotesk), system-ui, sans-serif;
+  }
+  .heading {
+    font-family: var(--font-heading), system-ui, sans-serif;
+    letter-spacing: -0.02em;
+  }
+  .wordmark {
+    font-family: var(--font-display), system-ui, sans-serif;
+    font-weight: 800;
+    letter-spacing: -0.03em;
+  }
+
+  /* fluid oversized headline */
+  .h-display {
+    font-family: var(--font-heading), system-ui, sans-serif;
+    font-weight: 800;
+    line-height: 0.95;
+    letter-spacing: -0.02em;
+  }
+
+  .text-balance {
+    text-wrap: balance;
+  }
+
+  /* ------------ Surfaces ------------ */
+  .glass {
+    background: hsl(var(--card) / 0.6);
+    backdrop-filter: blur(18px) saturate(140%);
+    -webkit-backdrop-filter: blur(18px) saturate(140%);
+    border: 1px solid hsl(var(--border) / 0.8);
+  }
+
+  .card-editorial {
+    background: hsl(var(--card));
+    border: 2px solid hsl(var(--foreground) / 0.1);
+    box-shadow: 0 20px 44px -22px hsl(25 50% 30% / 0.35);
+  }
+  .dark .card-editorial {
+    border-color: hsl(var(--border));
+    box-shadow: 0 30px 70px -34px hsl(0 0% 0% / 0.7);
+  }
+
+  /* ------------ Maximalist bits ------------ */
+  /* rotated sticker badge */
+  .sticker {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.4em;
+    border-radius: 999px;
+    padding: 0.4em 0.9em;
+    font-family: var(--font-heading), system-ui, sans-serif;
+    font-weight: 700;
+    font-size: 0.8rem;
+    line-height: 1;
+    border: 2px solid hsl(var(--foreground) / 0.85);
+    box-shadow: 3px 3px 0 0 hsl(var(--foreground) / 0.85);
+    background: hsl(var(--card));
+  }
+  .dark .sticker {
+    border-color: hsl(var(--foreground) / 0.5);
+    box-shadow: 3px 3px 0 0 hsl(var(--foreground) / 0.35);
+  }
+
+  /* chunky hard-shadow pop (buttons / cards) */
+  .pop {
+    box-shadow: 4px 4px 0 0 hsl(var(--foreground) / 0.85);
+  }
+  .dark .pop {
+    box-shadow: 4px 4px 0 0 hsl(var(--foreground) / 0.3);
+  }
+
+  /* ------------ Spotify-style bits ------------ */
+  /* colorful gradient tiles (like playlist covers) */
+  .tile-1 { background: linear-gradient(145deg, hsl(12 92% 56%), hsl(330 82% 46%)); }
+  .tile-2 { background: linear-gradient(145deg, hsl(266 78% 56%), hsl(205 88% 46%)); }
+  .tile-3 { background: linear-gradient(145deg, hsl(205 88% 52%), hsl(180 66% 40%)); }
+  .tile-4 { background: linear-gradient(145deg, hsl(96 60% 46%), hsl(160 58% 34%)); }
+  .tile-5 { background: linear-gradient(145deg, hsl(45 96% 55%), hsl(20 90% 50%)); }
+  .tile-6 { background: linear-gradient(145deg, hsl(330 84% 56%), hsl(266 80% 56%)); }
+
+  /* Spotify card surface (rises on hover) */
+  .card-spotify {
+    background: hsl(var(--card));
+    border-radius: 0.75rem;
+    transition: background 0.25s ease, transform 0.25s ease;
+  }
+  .card-spotify:hover {
+    background: hsl(var(--secondary));
+  }
+
+  /* horizontal shelf: hide scrollbar */
+  .no-scrollbar {
+    scrollbar-width: none;
+    -ms-overflow-style: none;
+  }
+  .no-scrollbar::-webkit-scrollbar {
+    display: none;
+  }
+
+  /* ------------ full-bleed gradients (cool electric, un-NGL) ------------ */
+  .ngl-grad {
+    background: linear-gradient(
+      170deg,
+      hsl(276 84% 58%) 0%,
+      hsl(250 86% 58%) 38%,
+      hsl(214 92% 54%) 72%,
+      hsl(190 92% 50%) 100%
+    );
+  }
+  .ngl-grad-alt {
+    background: linear-gradient(
+      170deg,
+      hsl(190 92% 50%) 0%,
+      hsl(214 90% 54%) 38%,
+      hsl(258 84% 58%) 74%,
+      hsl(300 80% 58%) 100%
+    );
+  }
+  /* curved section edges (black page shows through) */
+  .curve-bottom {
+    border-bottom-left-radius: 50% 4vw;
+    border-bottom-right-radius: 50% 4vw;
+  }
+  .curve-top {
+    border-top-left-radius: 50% 4vw;
+    border-top-right-radius: 50% 4vw;
+  }
+
+  /* hairline accent divider */
+  .rule {
+    height: 1px;
+    width: 100%;
+    background: linear-gradient(
+      90deg,
+      transparent,
+      hsl(var(--border)),
+      transparent
+    );
+  }
+}
+
+@layer utilities {
+  /* ------------ Theme-aware canvas backdrop ------------ */
+  .canvas-bg {
+    position: fixed;
+    inset: 0;
+    z-index: -1;
+    pointer-events: none;
+    /* LIGHT: loud candy gradient mesh */
+    background:
+      radial-gradient(50% 42% at 10% 6%, hsl(330 95% 74% / 0.5), transparent 60%),
+      radial-gradient(48% 40% at 90% 10%, hsl(205 95% 72% / 0.42), transparent 60%),
+      radial-gradient(52% 46% at 84% 90%, hsl(45 100% 62% / 0.5), transparent 62%),
+      radial-gradient(50% 46% at 6% 92%, hsl(96 75% 62% / 0.4), transparent 60%),
+      radial-gradient(46% 40% at 52% 48%, hsl(266 85% 80% / 0.28), transparent 66%);
+  }
+  .canvas-bg::after {
+    /* gentle drift so it feels alive */
+    content: "";
+    position: absolute;
+    inset: -20%;
+    background:
+      radial-gradient(40% 40% at 30% 30%, hsl(275 80% 80% / 0.18), transparent 60%),
+      radial-gradient(40% 40% at 70% 60%, hsl(190 90% 75% / 0.16), transparent 60%);
+    animation: float-slow 14s ease-in-out infinite;
+  }
+  .dark .canvas-bg {
+    /* clean Spotify near-black; the greeting header carries the color */
+    background:
+      radial-gradient(70% 40% at 50% 0%, hsl(12 60% 20% / 0.35), transparent 70%);
+  }
+  .dark .canvas-bg::after {
+    background: none;
+    animation: none;
+  }
+
+  /* ------------ Film grain overlay ------------ */
+  .grain::after {
+    content: "";
+    position: fixed;
+    inset: -50%;
+    z-index: 60;
+    pointer-events: none;
+    opacity: 0.045;
+    background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='200' height='200'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.85' numOctaves='3' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E");
+    animation: grain 0.6s steps(2) infinite;
+  }
+
+  /* subtle vignette — dark mode only (would muddy the light canvas) */
+  .dark .vignette::before {
+    content: "";
+    position: fixed;
+    inset: 0;
+    z-index: 1;
+    pointer-events: none;
+    background: radial-gradient(
+      120% 120% at 50% 0%,
+      transparent 55%,
+      hsl(var(--ink) / 0.55) 100%
+    );
+  }
+
+  .glow-ember {
+    box-shadow:
+      0 0 0 1px hsl(var(--primary) / 0.3),
+      0 10px 40px -8px hsl(var(--primary) / 0.45);
+  }
+
+  .text-ember {
+    color: hsl(var(--primary));
+  }
+
+  .bg-noise-fine {
+    background-image: radial-gradient(
+      hsl(var(--foreground) / 0.04) 1px,
+      transparent 1px
+    );
+    background-size: 4px 4px;
+  }
+
+  .mask-fade-x {
+    -webkit-mask-image: linear-gradient(
+      90deg,
+      transparent,
+      #000 8%,
+      #000 92%,
+      transparent
+    );
+    mask-image: linear-gradient(
+      90deg,
+      transparent,
+      #000 8%,
+      #000 92%,
+      transparent
+    );
+  }
+
+  /* hide native cursor when custom cursor is on (pointer devices only) */
+  @media (pointer: fine) {
+    .cursor-none-fine,
+    .cursor-none-fine * {
+      cursor: none !important;
+    }
+  }
+}
+
+/* ------------ Keyframes ------------ */
+@keyframes grain {
+  0%,
+  100% {
+    transform: translate(0, 0);
+  }
+  10% {
+    transform: translate(-5%, -10%);
+  }
+  30% {
+    transform: translate(3%, -15%);
+  }
+  50% {
+    transform: translate(9%, 9%);
+  }
+  70% {
+    transform: translate(-9%, 4%);
+  }
+  90% {
+    transform: translate(4%, -6%);
+  }
+}
+
+@keyframes marquee {
+  from {
+    transform: translateX(0);
+  }
+  to {
+    transform: translateX(-50%);
+  }
+}
+
+@keyframes shimmer {
+  100% {
+    transform: translateX(200%);
+  }
+}
+
+@keyframes float-slow {
+  0%,
+  100% {
+    transform: translateY(0);
+  }
+  50% {
+    transform: translateY(-10px);
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.001ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.001ms !important;
+    scroll-behavior: auto !important;
+  }
+  .grain::after {
+    animation: none;
   }
 }

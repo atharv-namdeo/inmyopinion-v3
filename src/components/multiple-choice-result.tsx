@@ -12,16 +12,16 @@ type Props = {
 };
 
 const CHART_COLORS = [
-    '#7C3AED', // purple
-    '#F59E42', // orange
-    '#10B981', // green
-    '#F43F5E', // pink/red
-    '#3B82F6', // blue
-    '#FBBF24', // yellow
-    '#6366F1', // indigo
-    '#34D399', // teal
-    '#F472B6', // light pink
-    '#60A5FA', // light blue
+    '#fb4d1e', // ember
+    '#f7a13b', // amber
+    '#f4ede1', // cream
+    '#c9532a', // burnt
+    '#e8b04b', // gold
+    '#a8d5c8', // teal accent
+    '#8a8079', // stone
+    '#d98c6a', // clay
+    '#b5651d', // ochre
+    '#6b8f8a', // slate teal
 ];
 
 export function MultipleChoiceResult({ question, answers }: Props) {

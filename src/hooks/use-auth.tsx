@@ -40,7 +40,7 @@ function AuthProvider({ children }: { children: ReactNode }) {
              setUserProfile(null);
           }
         } catch (error) {
-            console.error("Error fetching user profile:", error);
+            console.error("Error fetching user profile: ", error);
             setUserProfile(null);
         }
       } else {
@@ -83,7 +83,7 @@ function AuthProvider({ children }: { children: ReactNode }) {
   };
 
   const logout = () => {
-    signOut(auth).then(() => {
+    return signOut(auth).then(() => {
         router.push('/');
     });
   };

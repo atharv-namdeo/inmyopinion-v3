@@ -21,16 +21,26 @@ export function MultipleChoiceQuestion({
       onValueChange={onAnswerChange}
       className="space-y-3"
     >
-      {question.options?.map((option) => (
-        <Label
-          key={option}
-          htmlFor={option}
-          className="flex cursor-pointer items-center space-x-3 rounded-md border p-4 transition-colors hover:bg-accent/50 data-[state=checked]:border-primary data-[state=checked]:bg-primary/10"
-        >
-          <RadioGroupItem value={option} id={option} />
-          <span>{option}</span>
-        </Label>
-      ))}
+      {question.options?.map((option, i) => {
+        const selected = value === option;
+        return (
+          <Label
+            key={option}
+            htmlFor={option}
+            className={`group/opt flex cursor-pointer items-center gap-4 rounded-xl border p-4 transition-all duration-300 ease-out-expo hover:-translate-y-0.5 hover:border-primary/50 ${
+              selected
+                ? 'border-primary bg-primary/10 shadow-[0_0_0_1px_hsl(var(--primary)/0.4)]'
+                : 'border-border bg-secondary/20'
+            }`}
+          >
+            <span className="font-mono text-xs text-muted-foreground group-hover/opt:text-primary">
+              {String.fromCharCode(65 + i)}
+            </span>
+            <RadioGroupItem value={option} id={option} />
+            <span className="text-base">{option}</span>
+          </Label>
+        );
+      })}
     </RadioGroup>
   );
 }

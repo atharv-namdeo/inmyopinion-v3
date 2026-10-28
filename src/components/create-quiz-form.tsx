@@ -4,7 +4,7 @@
 import { useState, useEffect } from 'react';
 import { useRouter, useSearchParams } from 'next/navigation';
 import { motion, AnimatePresence } from 'framer-motion';
-import { PlusCircle, Trash2, Wand2, ListChecks, SlidersHorizontal, Check, X, Share2, CheckCircle, Save, Home } from 'lucide-react';
+import { PlusCircle, Trash2, Wand2, ListChecks, SlidersHorizontal, Check, X, Share2, Save, Home, Pencil, PartyPopper } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from '@/components/ui/card';
 import { Input } from '@/components/ui/input';
@@ -17,694 +17,659 @@ import { Badge } from '@/components/ui/badge';
 import { useToast } from '@/hooks/use-toast';
 import { useAuth } from '@/hooks/use-auth';
 import { db } from '@/lib/firebase';
-import { collection, addDoc, doc, getDoc, updateDoc, query, where, getDocs, serverTimestamp } from 'firebase/firestore';
+import { collection, addDoc, doc, getDoc, updateDoc, serverTimestamp } from 'firebase/firestore';
 
 export function CreateQuizForm() {
-  const router = useRouter();
-  const searchParams = useSearchParams();
-  const { toast } = useToast();
-  const { user } = useAuth();
-  
-  const [quizId, setQuizId] = useState<string | null>(null);
+ const router = useRouter();
+ const searchParams = useSearchParams();
+ const { toast } = useToast();
+ const { user } = useAuth();
 
-  const [quizTitle, setQuizTitle] = useState('My IMO');
-  const [questions, setQuestions] = useState<Question[]>([]);
-  const [endMessage, setEndMessage] = useState('Thanks for the feedback');
-  const [newQuestionText, setNewQuestionText] = useState('');
-  const [newQuestionType, setNewQuestionType] = useState<'multiple-choice' | 'sliding-bar'>('multiple-choice');
-  const [options, setOptions] = useState<string[]>(['', '']);
+ const [quizId, setQuizId] = useState<string | null>(null);
 
-  const [editingIndex, setEditingIndex] = useState<number | null>(null);
-  const [editingQuestion, setEditingQuestion] = useState<Question | null>(null);
-  
-  const [isQuizCreated, setIsQuizCreated] = useState(false);
-  const [quizLink, setQuizLink] = useState('');
+ const [quizTitle, setQuizTitle] = useState('my spill');
+ const [questions, setQuestions] = useState<Question[]>([]);
+ const [endMessage, setEndMessage] = useState('thanks for spilling');
+ const [newQuestionText, setNewQuestionText] = useState('');
+ const [newQuestionType, setNewQuestionType] = useState<'multiple-choice' |'sliding-bar'>('multiple-choice');
+ const [options, setOptions] = useState<string[]>(['','']);
 
-  useEffect(() => {
-    const id = searchParams.get('quizId');
-    if (id && user) {
-      const fetchQuiz = async () => {
-        const quizDoc = await getDoc(doc(db, "quizzes", id));
-        if (quizDoc.exists() && quizDoc.data().userId === user.uid) {
-          const existingQuiz = quizDoc.data() as Quiz;
-          setQuizId(quizDoc.id);
-          setQuizTitle(existingQuiz.title);
-          setQuestions(existingQuiz.questions.map((q, i) => ({ ...q, id: `db-${i}-${Date.now()}` })));
-          setEndMessage(existingQuiz.endMessage || 'Thanks for the feedback');
-        } else {
-           toast({
-            variant: "destructive",
-            title: "Quiz not found",
-            description: "The quiz you are trying to edit does not exist or you don't have permission to edit it.",
-          });
-          router.push('/create');
-        }
-      }
-      fetchQuiz();
-    }
-  }, [searchParams, user, router, toast]);
+ const [editingIndex, setEditingIndex] = useState<number | null>(null);
+ const [editingQuestion, setEditingQuestion] = useState<Question | null>(null);
 
-  const addQuestion = () => {
-    if (newQuestionText.trim() === '') return;
+ const [isQuizCreated, setIsQuizCreated] = useState(false);
+ const [quizLink, setQuizLink] = useState('');
 
-    let questionToAdd: Question = {
-      id: `custom-${questions.length + 1}-${Date.now()}`,
-      text: newQuestionText,
-      type: newQuestionType,
-    };
+ useEffect(() => {
+ const id = searchParams.get('quizId');
+ if (id && user) {
+ const fetchQuiz = async () => {
+ const quizDoc = await getDoc(doc(db,"quizzes", id));
+ if (quizDoc.exists() && quizDoc.data().userId === user.uid) {
+ const existingQuiz = quizDoc.data() as Quiz;
+ setQuizId(quizDoc.id);
+ setQuizTitle(existingQuiz.title);
+ setQuestions(existingQuiz.questions.map((q, i) => ({...q, id: `db-${i}-${Date.now()}` })));
+ setEndMessage(existingQuiz.endMessage ||'thanks for spilling');
+ } else {
+ toast({
+ variant: "destructive",
+ title: "spill not found",
+ description: "this spill doesn't exist or isn't yours to edit.",
+ });
+ router.push('/create');
+ }
+ };
+ fetchQuiz();
+ }
+ }, [searchParams, user, router, toast]);
 
-    if (newQuestionType === 'multiple-choice') {
-      const validOptions = options.map(o => o.trim()).filter(o => o !== '');
-      if (validOptions.length < 2) {
-        toast({
-          variant: "destructive",
-          title: "Error",
-          description: "Multiple choice questions must have at least 2 options.",
-        });
-        return;
-      }
-      questionToAdd.options = validOptions;
-    }
+ const addQuestion = () => {
+ if (newQuestionText.trim() ==='') return;
 
-    setQuestions([...questions, questionToAdd]);
-    setNewQuestionText('');
-    setNewQuestionType('multiple-choice');
-    setOptions(['', '']);
-  };
+ const questionToAdd: Question = {
+ id: `custom-${questions.length + 1}-${Date.now()}`,
+ text: newQuestionText,
+ type: newQuestionType,
+ };
 
-  const addSuggestedQuestion = (question: Question) => {
-    const questionWithUniqueId = { ...question, id: `suggested-${question.id}-${Date.now()}` };
-    if (!questions.some(q => q.text === questionWithUniqueId.text)) {
-        setQuestions([...questions, questionWithUniqueId]);
-    }
-  }
+ if (newQuestionType ==='multiple-choice') {
+ const validOptions = options.map(o => o.trim()).filter(o => o !=='');
+ if (validOptions.length < 2) {
+ toast({
+ variant: "destructive",
+ title: "hold up",
+ description: "multiple-choice questions need at least 2 options.",
+ });
+ return;
+ }
+ questionToAdd.options = validOptions;
+ }
 
-  const removeQuestion = (index: number) => {
-    setQuestions(questions.filter((_, i) => i !== index));
-  };
-  
-  const handleOptionChange = (index: number, value: string) => {
-    const newOptions = [...options];
-    newOptions[index] = value;
-    setOptions(newOptions);
-  };
+ setQuestions([...questions, questionToAdd]);
+ setNewQuestionText('');
+ setNewQuestionType('multiple-choice');
+ setOptions(['','']);
+ };
 
-  const addOption = () => {
-    setOptions([...options, '']);
-  };
+ const addSuggestedQuestion = (question: Question) => {
+ const questionWithUniqueId = {...question, id: `suggested-${question.id}-${Date.now()}` };
+ if (!questions.some(q => q.text === questionWithUniqueId.text)) {
+ setQuestions([...questions, questionWithUniqueId]);
+ }
+ };
 
-  const removeOption = (index: number) => {
-    if (options.length > 2) {
-      setOptions(options.filter((_, i) => i !== index));
-    }
-  };
+ const removeQuestion = (index: number) => {
+ setQuestions(questions.filter((_, i) => i !== index));
+ };
 
-  const startEditing = (index: number) => {
-    setEditingIndex(index);
-    setEditingQuestion({ ...questions[index] });
-  };
+ const handleOptionChange = (index: number, value: string) => {
+ const newOptions = [...options];
+ newOptions[index] = value;
+ setOptions(newOptions);
+ };
 
-  const cancelEditing = () => {
-    setEditingIndex(null);
-    setEditingQuestion(null);
-  };
+ const addOption = () => setOptions([...options,'']);
 
-  const saveEditing = (index: number) => {
-    if (editingQuestion) {
-      if (editingQuestion.type === 'multiple-choice') {
-        const validOptions = (editingQuestion.options ?? []).map(o => o.trim()).filter(o => o !== '');
-        if (validOptions.length < 2) {
-          toast({
-            variant: "destructive",
-            title: "Error",
-            description: "Multiple choice questions must have at least 2 options.",
-          });
-          return;
-        }
-        editingQuestion.options = validOptions;
-      }
-      const newQuestions = [...questions];
-      newQuestions[index] = editingQuestion;
-      setQuestions(newQuestions);
-      cancelEditing();
-    }
-  };
+ const removeOption = (index: number) => {
+ if (options.length > 2) setOptions(options.filter((_, i) => i !== index));
+ };
 
-  const handleEditingQuestionChange = (field: keyof Question, value: any) => {
-    if (editingQuestion) {
-      const updatedQuestion = { ...editingQuestion, [field]: value };
-      if (field === 'type') {
-        if (value === 'sliding-bar') {
-          delete updatedQuestion.options;
-        } else if (value === 'multiple-choice' && !updatedQuestion.options) {
-          updatedQuestion.options = ['', ''];
-        }
-      }
-      setEditingQuestion(updatedQuestion);
-    }
-  }
+ const startEditing = (index: number) => {
+ setEditingIndex(index);
+ setEditingQuestion({...questions[index] });
+ };
 
-  const handleEditingOptionChange = (optIndex: number, value: string) => {
-    if (editingQuestion && editingQuestion.options) {
-      const newOptions = [...editingQuestion.options];
-      newOptions[optIndex] = value;
-      handleEditingQuestionChange('options', newOptions);
-    }
-  };
-  
-  const addEditingOption = () => {
-    if (editingQuestion && editingQuestion.options) {
-       handleEditingQuestionChange('options', [...editingQuestion.options, '']);
-    }
-  };
-  
-  const removeEditingOption = (optIndex: number) => {
-     if (editingQuestion && editingQuestion.options && editingQuestion.options.length > 2) {
-      const newOptions = editingQuestion.options.filter((_, i) => i !== optIndex);
-      handleEditingQuestionChange('options', newOptions);
-    }
-  };
+ const cancelEditing = () => {
+ setEditingIndex(null);
+ setEditingQuestion(null);
+ };
 
-  const saveQuiz = async () => {
-    if (!user) {
-        toast({ variant: "destructive", title: "Not authenticated", description: "You must be logged in to save a quiz." });
-        return;
-    }
-    if (questions.length === 0) {
-      toast({
-        variant: "destructive",
-        title: "Error",
-        description: "Please add at least one question to your IMO.",
-      });
-      return;
-    }
-    
-  // Save questions with their unique IDs
-  const questionsForDb = questions;
+ const saveEditing = (index: number) => {
+ if (editingQuestion) {
+ if (editingQuestion.type ==='multiple-choice') {
+ const validOptions = (editingQuestion.options?? []).map(o => o.trim()).filter(o => o !=='');
+ if (validOptions.length < 2) {
+ toast({
+ variant: "destructive",
+ title: "hold up",
+ description: "multiple-choice questions need at least 2 options.",
+ });
+ return;
+ }
+ editingQuestion.options = validOptions;
+ }
+ const newQuestions = [...questions];
+ newQuestions[index] = editingQuestion;
+ setQuestions(newQuestions);
+ cancelEditing();
+ }
+ };
 
-    const quizData: Omit<Quiz, 'id' | 'createdAt'> & { createdAt: any } = {
-      userId: user.uid,
-      title: quizTitle || 'My Feedback Quiz',
-      questions: questionsForDb,
-      createdAt: serverTimestamp(),
-      endMessage: endMessage || 'Thanks for the feedback',
-    };
+ const handleEditingQuestionChange = (field: keyof Question, value: any) => {
+ if (editingQuestion) {
+ const updatedQuestion = {...editingQuestion, [field]: value };
+ if (field ==='type') {
+ if (value ==='sliding-bar') {
+ delete updatedQuestion.options;
+ } else if (value ==='multiple-choice' &&!updatedQuestion.options) {
+ updatedQuestion.options = ['',''];
+ }
+ }
+ setEditingQuestion(updatedQuestion);
+ }
+ };
 
-    try {
-        let newQuizId;
-        if (quizId) {
-            const quizRef = doc(db, "quizzes", quizId);
-            await updateDoc(quizRef, quizData);
-            newQuizId = quizId;
-        } else {
-            const docRef = await addDoc(collection(db, "quizzes"), quizData);
-            newQuizId = docRef.id;
-            setQuizId(docRef.id);
-        }
+ const handleEditingOptionChange = (optIndex: number, value: string) => {
+ if (editingQuestion && editingQuestion.options) {
+ const newOptions = [...editingQuestion.options];
+ newOptions[optIndex] = value;
+ handleEditingQuestionChange('options', newOptions);
+ }
+ };
 
-        toast({
-            title: quizId ? "IMO Updated!" : "IMO Saved!",
-            description: "Your IMO has been successfully saved.",
-        });
-        return newQuizId;
-    } catch (error) {
-        console.error("Error saving quiz: ", error);
-        toast({ variant: "destructive", title: "Save failed", description: "There was an error saving your IMO." });
-    }
-  };
+ const addEditingOption = () => {
+ if (editingQuestion && editingQuestion.options) {
+ handleEditingQuestionChange('options', [...editingQuestion.options,'']);
+ }
+ };
 
-  const createAndShareQuiz = async () => {
-    const newQuizId = await saveQuiz();
-    if (!newQuizId) return;
+ const removeEditingOption = (optIndex: number) => {
+ if (editingQuestion && editingQuestion.options && editingQuestion.options.length > 2) {
+ handleEditingQuestionChange('options', editingQuestion.options.filter((_, i) => i !== optIndex));
+ }
+ };
 
-    const url = `${window.location.origin}/quiz?id=${newQuizId}`;
-    setQuizLink(url);
-    setIsQuizCreated(true);
-    copyToClipboard(url, "The IMO link has been copied to your clipboard.");
-  };
+ const copyToClipboard = (text: string, message: string) => {
+ navigator.clipboard.writeText(text).then(
+ () => toast({ title: "copied!", description: message }),
+ () => toast({ variant: "destructive", title: "couldn't copy", description: "copy the link manually?" })
+ );
+ };
 
-  const copyToClipboard = (text: string, message: string) => {
-     navigator.clipboard.writeText(text).then(() => {
-      toast({
-        title: "Copied!",
-        description: message,
-      });
-    }, () => {
-       toast({
-        variant: "destructive",
-        title: "Failed to Copy",
-        description: "Could not copy the link. Please copy it manually.",
-      });
-    });
-  }
-  
-  if (isQuizCreated) {
-    return (
-      <Card className="w-full max-w-2xl shadow-2xl">
-        <CardHeader className="items-center text-center">
-            <div className="rounded-full bg-primary/10 p-4">
-                <CheckCircle className="h-10 w-10 text-primary" />
-            </div>
-            <CardTitle className="text-3xl font-headline mt-4">{quizId ? 'IMO Updated!' : 'IMO Created!'}</CardTitle>
-            <CardDescription>Your IMO is ready to be shared with your friends.</CardDescription>
-        </CardHeader>
-        <CardContent className="space-y-4 text-center">
-            <p className="font-semibold">Share this link:</p>
-            <div className="flex items-center gap-2 rounded-lg border bg-muted p-2">
-                <Input readOnly value={quizLink} className="flex-1 border-0 bg-transparent text-base shadow-none focus-visible:ring-0"/>
-                <Button onClick={() => copyToClipboard(quizLink, "The IMO link has been copied to your clipboard.")}> 
-                    <Share2 className="mr-2 h-4 w-4"/> Copy Link
-                </Button>
-            </div>
-            <Button
-              className="w-full max-w-xs mx-auto mt-4 bg-gradient-to-r from-purple-600 to-purple-900 text-white font-bold py-3 rounded-lg flex items-center justify-center gap-2"
-              onClick={() => {
-                const canvas = document.createElement('canvas');
-                canvas.width = 1080;
-                canvas.height = 1920;
-                const ctx = canvas.getContext('2d');
-                if (!ctx) return;
-                // Draw vertical gradient background (lighter at top, darker at bottom)
-                const gradient = ctx.createLinearGradient(0, 0, 0, 1920);
-                gradient.addColorStop(0, '#4b176a'); // lighter purple at top
-                gradient.addColorStop(1, '#1a0022'); // darker purple at bottom
-                ctx.fillStyle = gradient;
-                ctx.fillRect(0, 0, 1080, 1920);
-                // Draw dark purple border
-                ctx.strokeStyle = '#1a0022';
-                ctx.lineWidth = 32;
-                ctx.strokeRect(16, 16, 1048, 1888);
-                // Draw smaller purple circle top left
-                ctx.beginPath();
-                ctx.arc(120, 60, 90, 0, 2 * Math.PI);
-                ctx.fillStyle = '#a259ff';
-                ctx.globalAlpha = 0.7;
-                ctx.fill();
-                ctx.globalAlpha = 1;
-                // Draw logo at top center
-                const logo = new Image();
-                logo.src = '/logo.png';
-                logo.onload = () => {
-                  ctx.drawImage(logo, 440, 320, 200, 200);
-                  // Quiz title (shifted further down)
-                  ctx.font = 'bold 90px Arial';
-                  ctx.fillStyle = '#fff';
-                  ctx.textAlign = 'center';
-                  ctx.fillText(quizTitle || 'My IMO', 540, 650);
-                  // Description text (shifted further down)
-                  ctx.font = 'bold 60px Arial';
-                  ctx.fillText('Answer to My IMO!!', 540, 820);
-                  // Draw three arrows (shifted further down)
-                  ctx.strokeStyle = '#fff';
-                  ctx.lineWidth = 14;
-                  // Left arrow
-                  ctx.beginPath();
-                  ctx.moveTo(390, 870); ctx.lineTo(390, 1020); ctx.lineTo(360, 990);
-                  ctx.moveTo(390, 1020); ctx.lineTo(420, 990);
-                  ctx.stroke();
-                  // Middle arrow
-                  ctx.beginPath();
-                  ctx.moveTo(540, 870); ctx.lineTo(540, 1020); ctx.lineTo(510, 990);
-                  ctx.moveTo(540, 1020); ctx.lineTo(570, 990);
-                  ctx.stroke();
-                  // Right arrow
-                  ctx.beginPath();
-                  ctx.moveTo(690, 870); ctx.lineTo(690, 1020); ctx.lineTo(660, 990);
-                  ctx.moveTo(690, 1020); ctx.lineTo(720, 990);
-                  ctx.stroke();
-                  // 'InMyOpinion' at bottom
-                  ctx.font = 'bold 54px Arial';
-                  ctx.fillStyle = '#fff';
-                  ctx.textAlign = 'center';
-                  ctx.fillText('InMyOpinion', 540, 1850);
-                  // Download image
-                  const url = canvas.toDataURL('image/png');
-                  const a = document.createElement('a');
-                  a.href = url;
-                  a.download = 'instagram-story.png';
-                  document.body.appendChild(a);
-                  a.click();
-                  document.body.removeChild(a);
-                };
-              }}
-            >
-              <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="lucide lucide-instagram mr-2 h-5 w-5"><rect x="2" y="2" width="20" height="20" rx="5"/><path d="M16 11.37A4 4 0 1 1 12.63 8 4 4 0 0 1 16 11.37z"/><line x1="17.5" y1="6.5" x2="17.5" y2="6.5"/></svg>
-              Put in Your Instagram Story
-            </Button>
-        </CardContent>
-         <CardFooter className="flex-col sm:flex-row justify-center gap-2">
-            <Button variant="outline" onClick={() => router.push('/')}>
-                <Home className="mr-2 h-4 w-4" /> Go to Home
-            </Button>
-      <Button onClick={() => {
-        setIsQuizCreated(false);
-        setQuizId(null);
-        setQuizTitle('My IMO');
-        setQuestions([]);
-        router.push('/create');
-      }}>
-        <PlusCircle className="mr-2 h-4 w-4" /> Create IMO
-      </Button>
-        </CardFooter>
-      </Card>
-    )
-  }
+ const saveQuiz = async () => {
+ if (!user) {
+ toast({ variant: "destructive", title: "hold up", description: "you need to be logged in to save a spill." });
+ return;
+ }
+ if (questions.length === 0) {
+ toast({ variant: "destructive", title: "hold up", description: "add at least one question first, bestie." });
+ return;
+ }
 
-  return (
-    <div className="w-full max-w-4xl space-y-8 mx-auto px-2 sm:px-4">
-  <Card className="shadow-2xl mt-16">
-      {/* Back to Home button below card, mobile-friendly */}
-      <div className="flex justify-center mt-6">
-        <Button variant="outline" onClick={() => router.push('/')}
-          className="w-full max-w-xs sm:w-auto flex justify-center items-center">
-          <Home className="mr-2 h-4 w-4" /> Back to Home
-        </Button>
-      </div>
-        <CardHeader>
-          <CardTitle className="text-3xl font-headline flex items-center gap-2">
-            <PlusCircle className="text-primary" />
-            {quizId ? "Edit Your IMO" : "Create Your IMO"}
-          </CardTitle>
-          <CardDescription>
-            {quizId ? "Edit the title and questions of your IMO." : "Add a title and some questions, or choose from our suggestions below."}
-          </CardDescription>
-        </CardHeader>
-        <CardContent className="space-y-6">
+ const quizData: Omit<Quiz,'id' |'createdAt'> & { createdAt: any } = {
+ userId: user.uid,
+ title: quizTitle ||'my spill',
+ questions,
+ endMessage,
+ createdAt: serverTimestamp(),
+ };
 
-          <div className="space-y-2">
-            <Label htmlFor="quiz-title" className="text-lg font-semibold">IMO Title</Label>
-            <Input 
-              id="quiz-title"
-              value={quizTitle}
-              onChange={(e) => setQuizTitle(e.target.value)}
-              placeholder="E.g. How well do you know me?"
-              className="text-lg"
-            />
-          </div>
+ try {
+ let newQuizId;
+ if (quizId) {
+ await updateDoc(doc(db,"quizzes", quizId), quizData);
+ newQuizId = quizId;
+ } else {
+ const docRef = await addDoc(collection(db,"quizzes"), quizData);
+ newQuizId = docRef.id;
+ setQuizId(docRef.id);
+ }
+ toast({
+ title: quizId?"spill updated" : "spill saved",
+ description: "your spill is ready to share.",
+ });
+ return newQuizId;
+ } catch (error) {
+ console.error("Error saving quiz: ", error);
+ toast({ variant: "destructive", title: "save failed", description: "couldn't save your spill. try again?" });
+ }
+ };
 
-          <div className="space-y-2">
-            <Label htmlFor="end-message" className="text-lg font-semibold">End Message</Label>
-            <Input
-              id="end-message"
-              value={endMessage}
-              onChange={(e) => setEndMessage(e.target.value)}
-              placeholder="Thanks for the feedback"
-              className="text-base"
-            />
-            <p className="text-xs text-muted-foreground">This message will be shown at the end of the quiz. Leave blank for default.</p>
-          </div>
+ const createAndShareQuiz = async () => {
+ const newQuizId = await saveQuiz();
+ if (!newQuizId) return;
+ const url = `${window.location.origin}/quiz?id=${newQuizId}`;
+ setQuizLink(url);
+ setIsQuizCreated(true);
+ copyToClipboard(url,"link copied! go share it");
+ };
 
-          <div className="space-y-4 rounded-lg border p-4">
-            <h3 className="font-semibold">Add a Custom Question</h3>
-            <Textarea
-              placeholder="E.g., How good am I at listening?"
-              value={newQuestionText}
-              onChange={(e) => setNewQuestionText(e.target.value)}
-              className="text-base"
-            />
-            <div className="flex flex-col sm:flex-row gap-4">
-              <Select value={newQuestionType} onValueChange={(value: any) => setNewQuestionType(value)}>
-                <SelectTrigger className="w-full sm:w-[200px]">
-                  <SelectValue placeholder="Question Type" />
-                </SelectTrigger>
-                <SelectContent>
-                  <SelectItem value="multiple-choice"><ListChecks className="inline-block mr-2 h-4 w-4" />Multiple Choice</SelectItem>
-                  <SelectItem value="sliding-bar"><SlidersHorizontal className="inline-block mr-2 h-4 w-4" />Sliding Bar</SelectItem>
-                </SelectContent>
-              </Select>
-                <Button onClick={addQuestion} className="w-full sm:w-auto">
-                <PlusCircle className="mr-2 h-4 w-4" /> Add Question
-              </Button>
-            </div>
-             {newQuestionType === 'multiple-choice' && (
-              <div className="space-y-2 pt-2">
-                <Label>Options</Label>
-                {options.map((option, index) => (
-                  <div key={index} className="flex items-center gap-2">
-                    <Input
-                      type="text"
-                      placeholder={`Option ${index + 1}`}
-                      value={option}
-                      onChange={(e) => handleOptionChange(index, e.target.value)}
-                    />
-                    <Button variant="ghost" size="icon" onClick={() => removeOption(index)} disabled={options.length <= 2}>
-                      <Trash2 className="h-4 w-4" />
-                    </Button>
-                  </div>
-                ))}
-                <Button variant="outline" size="sm" onClick={addOption}>
-                  <PlusCircle className="mr-2 h-4 w-4" /> Add Option
-                </Button>
-              </div>
-            )}
-          </div>
-        </CardContent>
-      </Card>
-      
-      <AnimatePresence>
-        {questions.length > 0 && (
-          <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }}>
-            <Card>
-              <CardHeader>
-                <CardTitle>Your IMO Questions ({questions.length})</CardTitle>
-              </CardHeader>
-              <CardContent className="space-y-4">
-                {questions.map((q, index) => (
-                  <motion.div
-                    key={q.id}
-                    layout
-                    initial={{ opacity: 0, y: -20 }}
-                    animate={{ opacity: 1, y: 0 }}
-                    exit={{ opacity: 0, x: -50 }}
-                    className="flex flex-col rounded-md border p-4"
-                  >
-                   {editingIndex === index && editingQuestion ? (
-                      <div className="space-y-4">
-                         <Textarea
-                          value={editingQuestion.text}
-                          onChange={(e) => handleEditingQuestionChange('text', e.target.value)}
-                          className="text-base"
-                        />
-                        <Select
-                          value={editingQuestion.type}
-                          onValueChange={(value: any) => handleEditingQuestionChange('type', value)}
-                        >
-                          <SelectTrigger>
-                            <SelectValue placeholder="Question Type" />
-                          </SelectTrigger>
-                          <SelectContent>
-                            <SelectItem value="multiple-choice"><ListChecks className="inline-block mr-2 h-4 w-4" />Multiple Choice</SelectItem>
-                            <SelectItem value="sliding-bar"><SlidersHorizontal className="inline-block mr-2 h-4 w-4" />Sliding Bar</SelectItem>
-                          </SelectContent>
-                        </Select>
+ const downloadStory = async (title: string, qCount: number) => {
+ const W = 1080, H = 1920;
+ const canvas = document.createElement('canvas');
+ canvas.width = W; canvas.height = H;
+ const ctx = canvas.getContext('2d');
+ if (!ctx) return;
 
-                        {editingQuestion.type === 'multiple-choice' && (
-                          <div className="space-y-2 pt-2">
-                            <Label>Options</Label>
-                            {(editingQuestion.options || []).map((option, optIndex) => (
-                              <div key={optIndex} className="flex items-center gap-2">
-                                <Input
-                                  type="text"
-                                  placeholder={`Option ${optIndex + 1}`}
-                                  value={option}
-                                  onChange={(e) => handleEditingOptionChange(optIndex, e.target.value)}
-                                />
-                                <Button variant="ghost" size="icon" onClick={() => removeEditingOption(optIndex)} disabled={(editingQuestion.options || []).length <= 2}>
-                                  <Trash2 className="h-4 w-4" />
-                                </Button>
-                              </div>
-                            ))}
-                            <Button variant="outline" size="sm" onClick={addEditingOption}>
-                              <PlusCircle className="mr-2 h-4 w-4" /> Add Option
-                            </Button>
-                          </div>
-                        )}
-                        <div className="flex justify-end gap-2">
-                          <Button variant="ghost" onClick={cancelEditing}> <X className="mr-2 h-4 w-4" /> Cancel</Button>
-                          <Button onClick={() => saveEditing(index)}> <Check className="mr-2 h-4 w-4" /> Save</Button>
-                        </div>
-                      </div>
-                    ) : (
-                      <>
-                        <div className="flex items-start justify-between">
-                          <div className="flex items-start gap-3 flex-1 min-w-0">
-                            {q.type === 'multiple-choice' ? <ListChecks className="h-5 w-5 mt-1 text-muted-foreground" /> : <SlidersHorizontal className="h-5 w-5 mt-1 text-muted-foreground" />}
-                            <p className="flex-1 break-words">{q.text}</p>
-                          </div>
-                           <div className="flex items-center">
-                            <Button variant="ghost" size="icon" onClick={() => startEditing(index)}>
-                              <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="lucide lucide-pencil h-4 w-4"><path d="M17 3a2.85 2.83 0 1 1 4 4L7.5 20.5 2 22l1.5-5.5Z"/><path d="m15 5 4 4"/></svg>
-                            </Button>
-                            <Button variant="ghost" size="icon" onClick={() => removeQuestion(index)}>
-                              <Trash2 className="h-4 w-4 text-destructive" />
-                            </Button>
-                          </div>
-                        </div>
-                        {q.type === 'multiple-choice' && q.options && (
-                          <div className="mt-3 flex flex-wrap gap-2 pl-8">
-                            {q.options.map(opt => (
-                              <Badge key={opt} variant="secondary">{opt}</Badge>
-                            ))}
-                          </div>
-                        )}
-                        {q.type === 'multiple-choice' && q.options && (
-                          <div className="mt-4 flex justify-end">
-                            <Button
-                              variant="secondary"
-                              onClick={() => {
-                                const canvas = document.createElement('canvas');
-                                canvas.width = 1080;
-                                canvas.height = 1920;
-                                const ctx = canvas.getContext('2d');
-                                if (!ctx) return;
-                                // Background
-                                const gradient = ctx.createLinearGradient(0, 0, 0, 1920);
-                                gradient.addColorStop(0, '#3a084c');
-                                gradient.addColorStop(1, '#21002c');
-                                ctx.fillStyle = gradient;
-                                ctx.fillRect(0, 0, 1080, 1920);
-                                // Rounded corners effect
-                                ctx.save();
-                                ctx.globalAlpha = 0.3;
-                                ctx.beginPath();
-                                ctx.arc(0, 0, 180, 0, Math.PI * 2);
-                                ctx.arc(1080, 0, 120, 0, Math.PI * 2);
-                                ctx.arc(0, 1920, 120, 0, Math.PI * 2);
-                                ctx.arc(1080, 1920, 180, 0, Math.PI * 2);
-                                ctx.fillStyle = '#a259ff';
-                                ctx.fill();
-                                ctx.restore();
-                                // Logo
-                                const logo = new Image();
-                                logo.src = '/logo.png';
-                                logo.onload = () => {
-                                  ctx.save();
-                                  ctx.shadowColor = '#000';
-                                  ctx.shadowBlur = 32;
-                                  ctx.drawImage(logo, 440, 120, 200, 200);
-                                  ctx.restore();
-                                  // Quiz title
-                                  ctx.font = 'bold 80px Arial';
-                                  ctx.fillStyle = '#fff';
-                                  ctx.textAlign = 'center';
-                                  ctx.fillText(quizTitle || 'My Feedback Quiz', 540, 380);
-                                  // Question text
-                                  ctx.font = 'bold 48px Arial';
-                                  ctx.fillText(q.text, 540, 450);
-                                  // Donut chart
-                                  const centerX = 540, centerY = 700, outerR = 220, innerR = 120;
-                                  // Simulate responses for demo (replace with actual response data if available)
-                                  const responseCounts = q.options.map(() => Math.floor(Math.random() * 10));
-                                  const totalResponses = responseCounts.reduce((a, b) => a + b, 0) || 1;
-                                  const percentages = responseCounts.map(c => ((c / totalResponses) * 100).toFixed(1) + '%');
-                                  const colors = ['#ffc1d3', '#ffe066', '#ffb347', '#a0e7e5', '#b4f8c8', '#fbe7c6'];
-                                  let startAngle = -Math.PI / 2;
-                                  for (let i = 0; i < q.options.length; i++) {
-                                    const angle = (responseCounts[i] / totalResponses) * Math.PI * 2;
-                                    ctx.beginPath();
-                                    ctx.arc(centerX, centerY, outerR, startAngle, startAngle + angle);
-                                    ctx.arc(centerX, centerY, innerR, startAngle + angle, startAngle, true);
-                                    ctx.closePath();
-                                    ctx.fillStyle = colors[i % colors.length];
-                                    ctx.fill();
-                                    startAngle += angle;
-                                  }
-                                  // Answer breakdown box
-                                  ctx.save();
-                                  ctx.globalAlpha = 0.95;
-                                  ctx.fillStyle = '#1a0022';
-                                  ctx.beginPath();
-                                  ctx.moveTo(200, 950);
-                                  ctx.lineTo(880, 950);
-                                  ctx.quadraticCurveTo(1000, 950, 1000, 1070);
-                                  ctx.lineTo(1000, 1200);
-                                  ctx.quadraticCurveTo(1000, 1300, 880, 1300);
-                                  ctx.lineTo(200, 1300);
-                                  ctx.quadraticCurveTo(80, 1300, 80, 1200);
-                                  ctx.lineTo(80, 1070);
-                                  ctx.quadraticCurveTo(80, 950, 200, 950);
-                                  ctx.closePath();
-                                  ctx.fill();
-                                  ctx.restore();
-                                  // Answer breakdown text
-                                  for (let i = 0; i < q.options.length; i++) {
-                                    // Dot
-                                    ctx.beginPath();
-                                    ctx.arc(220, 1020 + i * 55, 18, 0, Math.PI * 2);
-                                    ctx.fillStyle = colors[i % colors.length];
-                                    ctx.fill();
-                                    // Label
-                                    ctx.font = 'bold 38px Arial';
-                                    ctx.fillStyle = '#fff';
-                                    ctx.textAlign = 'left';
-                                    ctx.fillText(q.options[i], 260, 1032 + i * 55);
-                                    // Percent
-                                    ctx.textAlign = 'right';
-                                    ctx.fillText(percentages[i], 960, 1032 + i * 55);
-                                  }
-                                  // Download image
-                                  const url = canvas.toDataURL('image/png');
-                                  const a = document.createElement('a');
-                                  a.href = url;
-                                  a.download = 'instagram-story.png';
-                                  document.body.appendChild(a);
-                                  a.click();
-                                  document.body.removeChild(a);
-                                };
-                              }}
-                            >
-                              <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="lucide lucide-instagram mr-2 h-5 w-5"><rect x="2" y="2" width="20" height="20" rx="5"/><path d="M16 11.37A4 4 0 1 1 12.63 8 4 4 0 0 1 16 11.37z"/><line x1="17.5" y1="6.5" x2="17.5" y2="6.5"/></svg>
-                              Share as Story
-                            </Button>
-                          </div>
-                        )}
-                        {q.type === 'sliding-bar' && (
-                            <div className="mt-4 flex items-center gap-2 pl-8">
-                                <span className="text-sm text-muted-foreground">0</span>
-                                <div className="h-1 w-full rounded-full bg-muted"></div>
-                                <span className="text-sm text-muted-foreground">10</span>
-                            </div>
-                        )}
-                      </>
-                   )}
-                  </motion.div>
-                ))}
-              </CardContent>
-               <CardFooter className="flex-col sm:flex-row gap-2">
-                  <Button onClick={createAndShareQuiz} size="lg" disabled={questions.length === 0}>
-                    <Share2 className="mr-2 h-5 w-5" />
-                    {quizId ? 'Update & Get Link' : 'Finish & Get Link'}
-                  </Button>
-                   <Button onClick={saveQuiz} size="lg" variant="secondary" disabled={questions.length === 0}>
-                    <Save className="mr-2 h-5 w-5" />
-                    {quizId ? 'Update IMO' : 'Save IMO'}
-                  </Button>
-              </CardFooter>
-            </Card>
-          </motion.div>
-        )}
-      </AnimatePresence>
+ // brand fonts (next/font hashed families, read off CSS vars)
+ const root = getComputedStyle(document.documentElement);
+ const fDisp = (root.getPropertyValue('--font-display').trim() || 'sans-serif') + ', sans-serif';
+ const fBody = (root.getPropertyValue('--font-grotesk').trim() || 'sans-serif') + ', sans-serif';
+ try { await (document as any).fonts?.ready; } catch {}
 
-      <Card>
-        <CardHeader>
-          <h3 className="font-semibold text-lg flex items-center gap-2">
-            <Wand2 className="text-primary" />
-            Suggested Questions
-          </h3>
-        </CardHeader>
-        <CardContent>
-          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3">
-            {suggestedQuestions.map((q) => (
-              <Button key={q.id} variant="outline" className="justify-start h-auto py-2" onClick={() => addSuggestedQuestion(q)}>
-                <PlusCircle className="h-4 w-4 mr-2 shrink-0"/>
-                <span className="text-left whitespace-normal">{q.text}</span>
-              </Button>
-            ))}
-          </div>
-        </CardContent>
-      </Card>
-    </div>
-  );
+ // ---- background: bold brand gradient ----
+ const bg = ctx.createLinearGradient(0, 0, W, H);
+ bg.addColorStop(0, '#7c3aed');
+ bg.addColorStop(0.45, '#4f46e5');
+ bg.addColorStop(0.75, '#2563eb');
+ bg.addColorStop(1, '#06b6d4');
+ ctx.fillStyle = bg; ctx.fillRect(0, 0, W, H);
+
+ // soft candy blobs (maximalist colour)
+ const blob = (x: number, y: number, r: number, c: string, a: number) => {
+ const g = ctx.createRadialGradient(x, y, 0, x, y, r);
+ g.addColorStop(0, c); g.addColorStop(1, 'rgba(0,0,0,0)');
+ ctx.globalAlpha = a; ctx.fillStyle = g;
+ ctx.beginPath(); ctx.arc(x, y, r, 0, Math.PI * 2); ctx.fill();
+ ctx.globalAlpha = 1;
+ };
+ blob(140, 300, 460, '#ff5a3c', 0.55);
+ blob(980, 520, 480, '#ff3ea5', 0.5);
+ blob(940, 1560, 560, '#b5ff3c', 0.3);
+ blob(160, 1640, 520, '#ffd23c', 0.38);
+
+ // confetti
+ const candy = ['#ff5a3c', '#ff3ea5', '#b5ff3c', '#ffd23c', '#ffffff'];
+ for (let i = 0; i < 30; i++) {
+ const x = Math.random() * W, y = Math.random() * H, s = 16 + Math.random() * 28, rot = Math.random() * Math.PI;
+ ctx.save(); ctx.translate(x, y); ctx.rotate(rot);
+ ctx.globalAlpha = 0.85; ctx.fillStyle = candy[i % candy.length];
+ ctx.beginPath(); (ctx as any).roundRect(-s / 2, -s / 4, s, s / 2, 6); ctx.fill();
+ ctx.restore();
+ }
+ ctx.globalAlpha = 1;
+
+ // ---- top row: wordmark + anon pill ----
+ ctx.textAlign = 'left'; ctx.fillStyle = '#fff';
+ ctx.font = `800 58px ${fDisp}`;
+ ctx.fillText('spill', 80, 190);
+ ctx.save();
+ ctx.translate(880, 165); ctx.rotate(-0.08);
+ ctx.fillStyle = '#ffffff';
+ ctx.beginPath(); (ctx as any).roundRect(-160, -42, 320, 84, 42); ctx.fill();
+ ctx.fillStyle = '#4f46e5'; ctx.textAlign = 'center';
+ ctx.font = `800 34px ${fBody}`;
+ ctx.fillText('100% ANON', 0, 12);
+ ctx.restore();
+
+ // ---- kicker ----
+ ctx.textAlign = 'left';
+ ctx.fillStyle = 'rgba(255,255,255,0.9)';
+ ctx.font = `700 46px ${fBody}`;
+ ctx.fillText('ANSWER ME:', 80, 560);
+
+ // ---- title: highlighted blocks, slight boho rotation ----
+ const maxW = 900;
+ const words = (title || 'my spill').trim().split(/\s+/);
+ const wrap = (size: number) => {
+ ctx.font = `900 ${size}px ${fDisp}`;
+ const ls: string[] = [];
+ let l = '';
+ for (const w of words) {
+ const t = l ? l + ' ' + w : w;
+ if (ctx.measureText(t).width > maxW && l) { ls.push(l); l = w; } else { l = t; }
+ }
+ if (l) ls.push(l);
+ return ls;
+ };
+ // shrink the type until the title fits its zone (max ~3 lines tall)
+ let fs = 118;
+ let lines = wrap(fs);
+ while (lines.length * (fs + 34) > 470 && fs > 56) {
+ fs -= 10;
+ lines = wrap(fs);
+ }
+
+ let y = 700;
+ const lh = fs + 34;
+ lines.forEach((ln, i) => {
+ ctx.font = `900 ${fs}px ${fDisp}`;
+ const w = ctx.measureText(ln).width;
+ ctx.save();
+ ctx.translate(80, y);
+ ctx.rotate((i % 2 ? 1 : -1) * 0.012);
+ // highlight block
+ ctx.fillStyle = candy[i % 4];
+ ctx.beginPath(); (ctx as any).roundRect(-16, -fs + 12, w + 36, fs + 24, 18); ctx.fill();
+ // dark text on block
+ ctx.fillStyle = '#17123a';
+ ctx.textAlign = 'left';
+ ctx.fillText(ln, 4, 0);
+ ctx.restore();
+ y += lh;
+ });
+
+ // ---- stat ----
+ ctx.textAlign = 'left';
+ ctx.fillStyle = 'rgba(255,255,255,0.92)';
+ ctx.font = `700 42px ${fBody}`;
+ ctx.fillText(`${qCount} question${qCount === 1 ? '' : 's'} · 100% anonymous`, 84, y + 48);
+
+ // ---- link-sticker placeholder box (label + instructions all inside,
+ //      a long horizontal rectangle centred in the empty space) ----
+ const statBottom = y + 90;
+ const footTop = 1790;
+ const bw = 920, bh = 320;
+ const bx = (1080 - bw) / 2;
+ const by = Math.max(statBottom + 20, statBottom + ((footTop - statBottom) - bh) / 2);
+
+ ctx.save();
+ ctx.setLineDash([22, 16]);
+ ctx.lineWidth = 5;
+ ctx.lineCap = 'round';
+ ctx.strokeStyle = 'rgba(255,255,255,0.95)';
+ ctx.fillStyle = 'rgba(255,255,255,0.14)';
+ ctx.beginPath(); (ctx as any).roundRect(bx, by, bw, bh, 32); ctx.fill(); ctx.stroke();
+ ctx.restore();
+
+ ctx.textAlign = 'center';
+ // label
+ ctx.fillStyle = 'rgba(255,255,255,0.82)';
+ ctx.font = `800 30px ${fBody}`;
+ ctx.fillText('ADD YOUR “LINK” STICKER HERE', 540, by + 66);
+ // big CTA
+ ctx.fillStyle = '#fff';
+ ctx.font = `900 54px ${fDisp}`;
+ ctx.fillText('tap to spill the tea', 540, by + 136);
+ // how-to inside the box
+ ctx.fillStyle = 'rgba(255,255,255,0.88)';
+ ctx.font = `600 30px ${fBody}`;
+ ctx.fillText('1. copy your spill link   2. add a “link” sticker', 540, by + 212);
+ ctx.fillText('3. drop it right here   4. post it', 540, by + 258);
+
+ // ---- wordmark + tagline ----
+ ctx.fillStyle = '#fff';
+ ctx.font = `800 44px ${fDisp}`;
+ ctx.fillText('spill', 540, 1850);
+ ctx.fillStyle = 'rgba(255,255,255,0.7)';
+ ctx.font = `600 30px ${fBody}`;
+ ctx.fillText('what do they really think?', 540, 1895);
+
+ const url = canvas.toDataURL('image/png');
+ const a = document.createElement('a');
+ a.href = url; a.download = 'spill-story.png';
+ document.body.appendChild(a); a.click(); document.body.removeChild(a);
+ };
+
+ // ---------------- success screen ----------------
+ if (isQuizCreated) {
+ return (
+ <Card className="mt-28 w-full max-w-2xl">
+ <CardHeader className="items-center text-center">
+ <span className="inline-flex h-16 w-16 items-center justify-center rounded-2xl bg-candy-lime text-ink shadow-lg">
+ <PartyPopper className="h-7 w-7" />
+ </span>
+ <CardTitle className="mt-4 text-3xl lowercase">{quizId?'spill updated' : 'your spill is live'}</CardTitle>
+ <CardDescription>drop this link anywhere & let people spill. </CardDescription>
+ </CardHeader>
+ <CardContent className="space-y-4 text-center">
+ <p className="text-xs font-bold uppercase tracking-[0.25em] text-muted-foreground">share this link</p>
+ <div className="flex items-center gap-2 rounded-xl border-2 border-border bg-secondary/40 p-2">
+ <Input readOnly value={quizLink} className="flex-1 border-0 bg-transparent text-base shadow-none focus-visible:ring-0" />
+ <Button onClick={() => copyToClipboard(quizLink,"link copied! go share it")}>
+ <Share2 className="mr-2 h-4 w-4" /> copy link
+ </Button>
+ </div>
+ <Button
+ className="mx-auto mt-4 flex w-full max-w-xs items-center justify-center gap-2"
+ variant="outline"
+ onClick={() => downloadStory(quizTitle, questions.length)}
+ >
+ share to your story
+ </Button>
+ </CardContent>
+ <CardFooter className="flex-col justify-center gap-2 sm:flex-row">
+ <Button variant="outline" onClick={() => router.push('/')}>
+ <Home className="mr-2 h-4 w-4" /> home
+ </Button>
+ <Button
+ onClick={() => {
+ setIsQuizCreated(false);
+ setQuizId(null);
+ setQuizTitle('my spill');
+ setQuestions([]);
+ router.push('/create');
+ }}
+ >
+ <PlusCircle className="mr-2 h-4 w-4" /> new spill
+ </Button>
+ </CardFooter>
+ </Card>
+ );
+ }
+
+ // ---------------- editor ----------------
+ return (
+ <div className="mx-auto w-full max-w-4xl space-y-8 px-2 pb-24 sm:px-4">
+ <div className="mt-28 flex justify-center">
+ <Button variant="outline" onClick={() => router.push('/')} className="w-full max-w-xs sm:w-auto">
+ <Home className="mr-2 h-4 w-4" /> back to home
+ </Button>
+ </div>
+
+ <Card>
+ <CardHeader>
+ <span className="sticker mb-2 inline-flex w-fit bg-candy-pink text-white">make a spill </span>
+ <CardTitle className="flex items-center gap-2 text-3xl lowercase">
+ {quizId?"edit your spill" : "make your spill"}
+ </CardTitle>
+ <CardDescription>
+ {quizId?"edit the title & questions people will answer." : "add a title & some questions, or steal one of our suggestions below"}
+ </CardDescription>
+ </CardHeader>
+ <CardContent className="space-y-6">
+ <div className="space-y-2">
+ <Label htmlFor="quiz-title" className="text-lg font-semibold">spill title</Label>
+ <Input
+ id="quiz-title"
+ value={quizTitle}
+ onChange={(e) => setQuizTitle(e.target.value)}
+ placeholder="e.g. what do you REALLY think of me?"
+ className="text-lg"
+ />
+ </div>
+
+ <div className="space-y-2">
+ <Label htmlFor="end-message" className="text-lg font-semibold">end message</Label>
+ <Input
+ id="end-message"
+ value={endMessage}
+ onChange={(e) => setEndMessage(e.target.value)}
+ placeholder="thanks for spilling"
+ className="text-base"
+ />
+ <p className="text-xs text-muted-foreground">shown after someone finishes. leave blank for the default.</p>
+ </div>
+
+ <div className="space-y-4 rounded-2xl border-2 border-border bg-secondary/30 p-4">
+ <h3 className="font-bold lowercase">add a question </h3>
+ <Textarea
+ placeholder="e.g. how good am i at texting back?"
+ value={newQuestionText}
+ onChange={(e) => setNewQuestionText(e.target.value)}
+ />
+ <Select value={newQuestionType} onValueChange={(v) => setNewQuestionType(v as any)}>
+ <SelectTrigger className="w-full sm:w-[240px]">
+ <SelectValue placeholder="question type" />
+ </SelectTrigger>
+ <SelectContent>
+ <SelectItem value="multiple-choice">multiple choice</SelectItem>
+ <SelectItem value="sliding-bar">slide-the-scale (0–10)</SelectItem>
+ </SelectContent>
+ </Select>
+
+ {newQuestionType ==='multiple-choice' && (
+ <div className="space-y-2">
+ <Label className="text-sm font-semibold">options</Label>
+ {options.map((option, index) => (
+ <div key={index} className="flex items-center gap-2">
+ <Input
+ value={option}
+ onChange={(e) => handleOptionChange(index, e.target.value)}
+ placeholder={`option ${index + 1}`}
+ />
+ <Button variant="ghost" size="icon" onClick={() => removeOption(index)} disabled={options.length <= 2}>
+ <Trash2 className="h-4 w-4" />
+ </Button>
+ </div>
+ ))}
+ <Button variant="outline" size="sm" onClick={addOption}>
+ <PlusCircle className="mr-2 h-4 w-4" /> add option
+ </Button>
+ </div>
+ )}
+
+ <Button onClick={addQuestion} className="w-full sm:w-auto">
+ <PlusCircle className="mr-2 h-5 w-5" /> add question
+ </Button>
+ </div>
+ </CardContent>
+ </Card>
+
+ <AnimatePresence>
+ {questions.length > 0 && (
+ <motion.div
+ initial={{ opacity: 0, y: 12 }}
+ animate={{ opacity: 1, y: 0 }}
+ exit={{ opacity: 0, y: -12 }}
+ >
+ <Card>
+ <CardHeader>
+ <CardTitle className="lowercase">your questions ({questions.length})</CardTitle>
+ </CardHeader>
+ <CardContent className="space-y-4">
+ {questions.map((q, index) => (
+ <motion.div
+ key={q.id}
+ layout
+ initial={{ opacity: 0, y: 8 }}
+ animate={{ opacity: 1, y: 0 }}
+ className="rounded-2xl border-2 border-border bg-secondary/20 p-4"
+ >
+ {editingIndex === index? (
+ <div className="space-y-3">
+ <Textarea
+ value={editingQuestion?.text??''}
+ onChange={(e) => handleEditingQuestionChange('text', e.target.value)}
+ />
+ <Select
+ value={editingQuestion?.type}
+ onValueChange={(v) => handleEditingQuestionChange('type', v)}
+ >
+ <SelectTrigger className="w-full sm:w-[240px]">
+ <SelectValue />
+ </SelectTrigger>
+ <SelectContent>
+ <SelectItem value="multiple-choice">multiple choice</SelectItem>
+ <SelectItem value="sliding-bar">slide-the-scale (0–10)</SelectItem>
+ </SelectContent>
+ </Select>
+ {editingQuestion?.type ==='multiple-choice' && (
+ <div className="space-y-2">
+ {editingQuestion.options?.map((opt, optIndex) => (
+ <div key={optIndex} className="flex items-center gap-2">
+ <Input value={opt} onChange={(e) => handleEditingOptionChange(optIndex, e.target.value)} />
+ <Button
+ variant="ghost"
+ size="icon"
+ onClick={() => removeEditingOption(optIndex)}
+ disabled={(editingQuestion.options?.length?? 0) <= 2}
+ >
+ <Trash2 className="h-4 w-4" />
+ </Button>
+ </div>
+ ))}
+ <Button variant="outline" size="sm" onClick={addEditingOption}>
+ <PlusCircle className="mr-2 h-4 w-4" /> add option
+ </Button>
+ </div>
+ )}
+ <div className="flex gap-2">
+ <Button size="sm" onClick={() => saveEditing(index)}>
+ <Check className="mr-2 h-4 w-4" /> save
+ </Button>
+ <Button size="sm" variant="ghost" onClick={cancelEditing}>
+ <X className="mr-2 h-4 w-4" /> cancel
+ </Button>
+ </div>
+ </div>
+ ) : (
+ <>
+ <div className="flex items-start justify-between gap-4">
+ <div className="flex items-start gap-3">
+ {q.type ==='multiple-choice'? (
+ <ListChecks className="mt-1 h-5 w-5 shrink-0 text-primary" />
+ ) : (
+ <SlidersHorizontal className="mt-1 h-5 w-5 shrink-0 text-primary" />
+ )}
+ <div>
+ <p className="font-semibold">{q.text}</p>
+ <Badge variant="secondary" className="mt-1">
+ {q.type ==='multiple-choice'?'multiple choice' : 'slide-the-scale'}
+ </Badge>
+ </div>
+ </div>
+ <div className="flex gap-1">
+ <Button variant="ghost" size="icon" onClick={() => startEditing(index)}>
+ <Pencil className="h-4 w-4" />
+ </Button>
+ <Button variant="ghost" size="icon" onClick={() => removeQuestion(index)}>
+ <Trash2 className="h-4 w-4" />
+ </Button>
+ </div>
+ </div>
+
+ {q.type ==='multiple-choice' && q.options && (
+ <div className="mt-3 flex flex-wrap gap-2 pl-8">
+ {q.options.map((opt) => (
+ <Badge key={opt} variant="outline">{opt}</Badge>
+ ))}
+ </div>
+ )}
+
+ {q.type ==='sliding-bar' && (
+ <div className="mt-4 flex items-center gap-2 pl-8">
+ <span className="text-sm text-muted-foreground">0</span>
+ <div className="h-1 w-full rounded-full bg-muted" />
+ <span className="text-sm text-muted-foreground">10</span>
+ </div>
+ )}
+ </>
+ )}
+ </motion.div>
+ ))}
+ </CardContent>
+ <CardFooter className="flex-col gap-2 sm:flex-row">
+ <Button onClick={createAndShareQuiz} size="lg" disabled={questions.length === 0}>
+ <Share2 className="mr-2 h-5 w-5" />
+ {quizId?'update & get link' : 'make my spill'}
+ </Button>
+ <Button onClick={saveQuiz} size="lg" variant="secondary" disabled={questions.length === 0}>
+ <Save className="mr-2 h-5 w-5" />
+ {quizId?'update spill' : 'save spill'}
+ </Button>
+ </CardFooter>
+ </Card>
+ </motion.div>
+ )}
+ </AnimatePresence>
+
+ <Card>
+ <CardHeader>
+ <h3 className="flex items-center gap-2 text-lg font-bold lowercase">
+ <Wand2 className="text-primary" /> not sure what to ask?
+ </h3>
+ <CardDescription>steal one of these to get started </CardDescription>
+ </CardHeader>
+ <CardContent className="flex flex-wrap gap-2">
+ {suggestedQuestions.map((q) => (
+ <Button key={q.id} variant="outline" size="sm" onClick={() => addSuggestedQuestion(q)}>
+ <PlusCircle className="mr-2 h-4 w-4" /> {q.text}
+ </Button>
+ ))}
+ </CardContent>
+ </Card>
+ </div>
+ );
 }
-
-    
