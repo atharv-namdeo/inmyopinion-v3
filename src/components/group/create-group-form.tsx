@@ -29,6 +29,26 @@ const SAMPLE_QUESTIONS: { text: string; type: GroupQuestionType }[] = [
   { text: "if we were in a horror movie, who gets eliminated in the first 5 minutes?", type: 'member_pick' },
   { text: "what is an unspoken funny truth or confession about this group that nobody says out loud?", type: 'short_answer' },
   { text: "if this friend was arrested today, what hilarious or bizarre crime would it be for?", type: 'behavior_roast' },
+  { text: "who will cancel plans at the very last minute with the wildest excuse?", type: 'member_pick' },
+  { text: "who is most likely to become rich and still borrow your Netflix account?", type: 'member_pick' },
+  { text: "who has the most chaotic screen time on their phone?", type: 'member_pick' },
+  { text: "who falls in love after 2 days of texting someone new?", type: 'member_pick' },
+  { text: "who is the group therapist who never follows their own advice?", type: 'member_pick' },
+  { text: "what is the most hilarious or chaotic core memory you share with this friend?", type: 'behavior_roast' },
+  { text: "who talks the biggest game before doing absolutely nothing?", type: 'member_pick' },
+  { text: "who gets way too competitive and screams during a simple board game?", type: 'member_pick' },
+  { text: "what is the most iconic quote or catchphrase this friend always says?", type: 'behavior_roast' },
+  { text: "who would accidentally leak classified secrets because they cannot keep tea?", type: 'member_pick' },
+  { text: "what is one brutally honest piece of advice this friend needs to hear?", type: 'behavior_roast' },
+  { text: "who is the mom or dad of the squad who always brings snacks?", type: 'member_pick' },
+  { text: "who leaves everyone on read but posts Instagram stories 2 minutes later?", type: 'member_pick' },
+  { text: "if our squad wrote a book together, what would the embarrassing title be?", type: 'short_answer' },
+  { text: "who orders the most expensive item and then asks to split the bill equally?", type: 'member_pick' },
+  { text: "who would cry during an animated kids movie in the theatre?", type: 'member_pick' },
+  { text: "who is most likely to survive a zombie apocalypse purely on luck?", type: 'member_pick' },
+  { text: "what is one red flag and one green flag about this friend?", type: 'behavior_roast' },
+  { text: "who gets lost even while using Google Maps with voice on?", type: 'member_pick' },
+  { text: "what is an inside joke between this group that no outsider will ever understand?", type: 'short_answer' },
 ];
 
 const SUGGESTED = SAMPLE_QUESTIONS.map(q => q.text);
@@ -240,7 +260,7 @@ export function CreateGroupForm() {
     ctx.font = `700 46px ${fBody}`;
     ctx.fillText('VOTE ON THE GROUP:', 80, 560);
 
-    // title (group name) — highlighted blocks
+    // title (group name): highlighted blocks
     const maxW = 900;
     const words = (groupName || 'the squad').trim().split(/\s+/);
     const wrap = (size: number) => {
@@ -282,29 +302,26 @@ export function CreateGroupForm() {
     // link-sticker placeholder box
     const statBottom = y + 90;
     const footTop = 1790;
-    const bw = 920, bh = 320;
+    // link-sticker placeholder box (compact, modern height)
+    const bw = 880, bh = 150;
     const bx = (1080 - bw) / 2;
     const by = Math.max(statBottom + 20, statBottom + ((footTop - statBottom) - bh) / 2);
 
     ctx.save();
-    ctx.setLineDash([22, 16]);
-    ctx.lineWidth = 5; ctx.lineCap = 'round';
+    ctx.setLineDash([18, 14]);
+    ctx.lineWidth = 4.5; ctx.lineCap = 'round';
     ctx.strokeStyle = 'rgba(255,255,255,0.95)';
-    ctx.fillStyle = 'rgba(255,255,255,0.14)';
-    ctx.beginPath(); (ctx as any).roundRect(bx, by, bw, bh, 32); ctx.fill(); ctx.stroke();
+    ctx.fillStyle = 'rgba(255,255,255,0.16)';
+    ctx.beginPath(); (ctx as any).roundRect(bx, by, bw, bh, 28); ctx.fill(); ctx.stroke();
     ctx.restore();
 
     ctx.textAlign = 'center';
-    ctx.fillStyle = 'rgba(255,255,255,0.82)';
-    ctx.font = `800 30px ${fBody}`;
-    ctx.fillText('ADD YOUR “LINK” STICKER HERE', 540, by + 66);
+    ctx.fillStyle = 'rgba(255,255,255,0.85)';
+    ctx.font = `800 26px ${fBody}`;
+    ctx.fillText('ADD LINK STICKER HERE', 540, by + 52);
     ctx.fillStyle = '#fff';
-    ctx.font = `900 54px ${fDisp}`;
-    ctx.fillText('vote on the group', 540, by + 136);
-    ctx.fillStyle = 'rgba(255,255,255,0.88)';
-    ctx.font = `600 30px ${fBody}`;
-    ctx.fillText('1. copy the group link   2. add a “link” sticker', 540, by + 212);
-    ctx.fillText('3. drop it right here   4. post it', 540, by + 258);
+    ctx.font = `900 48px ${fDisp}`;
+    ctx.fillText('vote on the group', 540, by + 112);
 
     // footer
     ctx.fillStyle = '#fff';
@@ -579,10 +596,10 @@ export function CreateGroupForm() {
               <h3 className="flex items-center gap-2 text-lg font-bold lowercase">
                 <Wand2 className="text-primary" /> not sure what to ask?
               </h3>
-              <CardDescription>10 curated sample questions to get the tea flowing</CardDescription>
+              <CardDescription>{SAMPLE_QUESTIONS.length} curated question suggestions to get the tea flowing</CardDescription>
             </div>
             <Button variant="secondary" size="sm" onClick={addAllSampleQuestions} className="w-fit">
-              <Sparkles className="mr-2 h-4 w-4 text-primary" /> add all 10 sample questions
+              <Sparkles className="mr-2 h-4 w-4 text-primary" /> add all sample questions
             </Button>
           </div>
         </CardHeader>
@@ -593,9 +610,10 @@ export function CreateGroupForm() {
               variant="outline"
               size="sm"
               onClick={() => addQuestion(sq.text, sq.type)}
-              className="text-left"
+              className="h-auto min-h-9 py-2 px-3.5 whitespace-normal text-left justify-start leading-snug w-full sm:w-auto max-w-full break-words rounded-xl"
             >
-              <PlusCircle className="mr-2 h-4 w-4 shrink-0" /> {sq.text}
+              <PlusCircle className="mr-2 h-4 w-4 shrink-0 text-primary" />
+              <span className="break-words text-xs">{sq.text}</span>
             </Button>
           ))}
         </CardContent>

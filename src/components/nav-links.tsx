@@ -12,7 +12,7 @@ export function NavLinks() {
     { label: "make a spill", href: user ? "/create" : "/login" },
     { label: "group spill", href: user ? "/group/create" : "/login" },
     { label: "how it works", href: "/#how" },
-    { label: "my spills", href: user ? "/#your-spills" : "/login" },
+    { label: "my spills", href: user ? "/profile" : "/login" },
   ];
 
   return (

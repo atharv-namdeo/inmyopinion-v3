@@ -350,33 +350,27 @@ export function CreateQuizForm() {
  //      a long horizontal rectangle centred in the empty space) ----
  const statBottom = y + 90;
  const footTop = 1790;
- const bw = 920, bh = 320;
- const bx = (1080 - bw) / 2;
- const by = Math.max(statBottom + 20, statBottom + ((footTop - statBottom) - bh) / 2);
+  // ---- link-sticker placeholder box (compact, modern height) ----
+  const bw = 880, bh = 150;
+  const bx = (1080 - bw) / 2;
+  const by = Math.max(statBottom + 20, statBottom + ((footTop - statBottom) - bh) / 2);
 
- ctx.save();
- ctx.setLineDash([22, 16]);
- ctx.lineWidth = 5;
- ctx.lineCap = 'round';
- ctx.strokeStyle = 'rgba(255,255,255,0.95)';
- ctx.fillStyle = 'rgba(255,255,255,0.14)';
- ctx.beginPath(); (ctx as any).roundRect(bx, by, bw, bh, 32); ctx.fill(); ctx.stroke();
- ctx.restore();
+  ctx.save();
+  ctx.setLineDash([18, 14]);
+  ctx.lineWidth = 4.5;
+  ctx.lineCap = 'round';
+  ctx.strokeStyle = 'rgba(255,255,255,0.95)';
+  ctx.fillStyle = 'rgba(255,255,255,0.16)';
+  ctx.beginPath(); (ctx as any).roundRect(bx, by, bw, bh, 28); ctx.fill(); ctx.stroke();
+  ctx.restore();
 
- ctx.textAlign = 'center';
- // label
- ctx.fillStyle = 'rgba(255,255,255,0.82)';
- ctx.font = `800 30px ${fBody}`;
- ctx.fillText('ADD YOUR “LINK” STICKER HERE', 540, by + 66);
- // big CTA
- ctx.fillStyle = '#fff';
- ctx.font = `900 54px ${fDisp}`;
- ctx.fillText('tap to spill the tea', 540, by + 136);
- // how-to inside the box
- ctx.fillStyle = 'rgba(255,255,255,0.88)';
- ctx.font = `600 30px ${fBody}`;
- ctx.fillText('1. copy your spill link   2. add a “link” sticker', 540, by + 212);
- ctx.fillText('3. drop it right here   4. post it', 540, by + 258);
+  ctx.textAlign = 'center';
+  ctx.fillStyle = 'rgba(255,255,255,0.85)';
+  ctx.font = `800 26px ${fBody}`;
+  ctx.fillText('ADD LINK STICKER HERE', 540, by + 52);
+  ctx.fillStyle = '#fff';
+  ctx.font = `900 48px ${fDisp}`;
+  ctx.fillText('tap to spill the tea', 540, by + 112);
 
  // ---- wordmark + tagline ----
  ctx.fillStyle = '#fff';
@@ -664,9 +658,16 @@ export function CreateQuizForm() {
  </CardHeader>
  <CardContent className="flex flex-wrap gap-2">
  {suggestedQuestions.map((q) => (
- <Button key={q.id} variant="outline" size="sm" onClick={() => addSuggestedQuestion(q)}>
- <PlusCircle className="mr-2 h-4 w-4" /> {q.text}
- </Button>
+              <Button
+                key={q.id}
+                variant="outline"
+                size="sm"
+                onClick={() => addSuggestedQuestion(q)}
+                className="h-auto min-h-9 py-2 px-3.5 whitespace-normal text-left justify-start leading-snug w-full sm:w-auto max-w-full break-words rounded-xl"
+              >
+                <PlusCircle className="mr-2 h-4 w-4 shrink-0 text-primary" />
+                <span className="break-words text-xs">{q.text}</span>
+              </Button>
  ))}
  </CardContent>
  </Card>
