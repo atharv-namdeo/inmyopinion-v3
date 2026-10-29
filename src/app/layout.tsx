@@ -47,12 +47,12 @@ const mono = JetBrains_Mono({
 });
 
 export const metadata: Metadata = {
- title: 'spill — what do they really think?',
+ title: 'spill | what do they really think?',
  description:
-'Make a lil poll about yourself, drop the link, and let people spill the tea anonymously — then AI reads the room and tells you the vibe.',
+'Make a lil poll about yourself, drop the link, and let people spill the tea anonymously, then AI reads the room and tells you the vibe.',
  metadataBase: new URL('https://spill.app'),
  openGraph: {
- title: 'spill — what do they really think?',
+ title: 'spill | what do they really think?',
  description:
 'Drop the link, let them spill the tea anonymously.',
  type: 'website',

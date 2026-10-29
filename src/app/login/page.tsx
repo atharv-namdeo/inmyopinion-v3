@@ -63,7 +63,7 @@ export default function LoginPage() {
  <SplitText by="word" delay={0.2}>back</SplitText>
  </h1>
  <p className="mt-6 max-w-sm text-base font-semibold leading-relaxed text-white/85">
- your spills, your tea, your AI reads — all waiting right where you
+ your spills, your tea, your AI reads: all waiting right where you
  left them.
  </p>
  </div>

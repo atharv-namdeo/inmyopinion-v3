@@ -51,7 +51,7 @@ export function YourSpillsShelf() {
   const copyLink = (id: string) => {
     const url = `${window.location.origin}/quiz?id=${id}`;
     navigator.clipboard.writeText(url).then(
-      () => toast({ title: "copied!", description: "link copied — go share it" }),
+      () => toast({ title: "copied!", description: "link copied, go share it" }),
       () => toast({ variant: "destructive", title: "couldn't copy", description: "copy it manually?" })
     );
   };
@@ -96,7 +96,7 @@ export function YourSpillsShelf() {
     return (
       <Shelf title="your spills">
         <div className="flex w-full flex-col items-start gap-3 rounded-xl bg-secondary/50 p-6">
-          <p className="text-sm font-medium text-muted-foreground">no spills yet — make your first one.</p>
+          <p className="text-sm font-medium text-muted-foreground">no spills yet, make your first one.</p>
           <Button asChild size="sm"><Link href="/create">make a spill</Link></Button>
         </div>
       </Shelf>

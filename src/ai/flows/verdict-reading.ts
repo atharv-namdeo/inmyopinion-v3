@@ -3,8 +3,8 @@
 /**
  * @fileOverview Turns aggregated crowd responses into a punchy "verdict reading".
  *
- * - getVerdictReading — server action that generates the reading.
- * - VerdictReadingInput / VerdictReadingOutput — I/O types.
+ * - getVerdictReading: server action that generates the reading.
+ * - VerdictReadingInput / VerdictReadingOutput: I/O types.
  */
 
 import { ai } from '@/ai/genkit';
@@ -37,7 +37,7 @@ const VerdictReadingOutputSchema = z.object({
   reading: z
     .string()
     .describe(
-      'A 2-4 sentence reading of what the crowd collectively decided. Warm, playful, a little cheeky — never cruel.'
+      'A 2-4 sentence reading of what the crowd collectively decided. Warm, playful, a little cheeky, never cruel.'
     ),
   score: z
     .number()
@@ -57,7 +57,7 @@ const prompt = ai.definePrompt({
   name: 'verdictReadingPrompt',
   input: { schema: VerdictReadingInputSchema },
   output: { schema: VerdictReadingOutputSchema },
-  prompt: `You are "spill" — a witty, warm-hearted bestie who reads the tea a crowd just spilled about a person, based on an anonymous poll they made about themselves.
+  prompt: `You are "spill" , a witty, warm-hearted bestie who reads the tea a crowd just spilled about a person, based on an anonymous poll they made about themselves.
 
 Voice: playful, Gen-Z, a lil cheeky, like a fun friend hyping you up while gently roasting you. Light casual slang is welcome (fr, no cap, lowkey, it's giving, the vibe) but don't overdo it. Never mean, never cruel, never insulting appearance or protected traits. Keep it fun and screenshot-able.
 
@@ -81,7 +81,7 @@ Here is what the crowd said:
 Now deliver the verdict:
 - headline: one punchy line summarizing the crowd's overall take.
 - vibe: a 2-4 word vibe tag.
-- reading: 2-4 sentences reading the room — reference the actual standout results, contradictions, or landslides you see in the data.
+- reading: 2-4 sentences reading the room, reference the actual standout results, contradictions, or landslides you see in the data.
 - score: an overall crowd-approval score 0-100 based on how positive the responses skew.
 
 If there is very little data (few responses), acknowledge it with humor.`,

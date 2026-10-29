@@ -6,7 +6,7 @@ import { Reveal } from "@/components/motion/reveal";
 
 /**
  * Landing showcase for the AI tea-reader. The card is a clearly-labelled
- * PREVIEW — the real one runs on your own results.
+ * PREVIEW: the real one runs on your own results.
  */
 export function AiShowcase() {
  return (
@@ -21,14 +21,14 @@ export function AiShowcase() {
  </h2>
  <p className="mt-5 max-w-md text-sm font-medium leading-relaxed text-muted-foreground">
  charts show you <em>what</em> people picked. spill&apos;s AI tells you
- what it <em>means</em> — it reads every anonymous answer and hands you
+ what it <em>means</em>: it reads every anonymous answer and hands you
  a lil personality read you can screenshot and post.
  </p>
  <ul className="mt-6 space-y-2.5 text-sm font-medium">
  {[
  { Icon: Flame, t: "clocks the landslides, splits & plot twists" },
  { Icon: TrendingUp, t: "gives you a crowd-approval score" },
- { Icon: Heart, t: "cheeky but kind — never mean" },
+ { Icon: Heart, t: "cheeky but kind, never mean" },
  ].map((f) => (
  <li key={f.t} className="flex items-center gap-3">
  <span className="flex h-7 w-7 shrink-0 items-center justify-center rounded-lg bg-primary/15 text-primary">
@@ -75,7 +75,7 @@ export function AiShowcase() {
  chaotic, adored, mildly feral.
  </h3>
  <p className="mt-4 text-lg font-medium leading-relaxed text-foreground/90">
- the people have spoken: you&apos;d 100% help them hide a body — but
+ the people have spoken: you&apos;d 100% help them hide a body, but
  they&apos;re split down the middle on whether you ever text back. a
  beloved menace with commitment issues to your notifications.
  </p>

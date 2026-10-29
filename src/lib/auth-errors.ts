@@ -1,7 +1,6 @@
 /**
- * Maps raw Firebase auth errors to human-readable messages, and — crucially —
- * detects a missing / invalid Firebase configuration so users see the real
- * cause instead of a vague "something went wrong".
+ * Maps raw Firebase auth errors to human readable messages and
+ * detects missing or invalid Firebase configuration.
  */
 
 export type AuthErrorKind =
@@ -13,6 +12,9 @@ export type AuthErrorKind =
   | "generic";
 
 export function classifyAuthError(error: unknown): AuthErrorKind {
+  if (typeof window !== "undefined") {
+    console.error("Auth error details:", error);
+  }
   const msg =
     (typeof error === "object" && error && "message" in error
       ? String((error as any).message)
@@ -59,10 +61,10 @@ export function classifyAuthError(error: unknown): AuthErrorKind {
 }
 
 const CONFIG_MESSAGE =
-  "Firebase isn't configured. The API key is invalid — add a valid Firebase web config to .env.local (see .env.example) and restart the dev server.";
+  "Firebase is not configured properly. The API key or project credentials in environment settings are invalid.";
 
 const RULES_MESSAGE =
-  "The database is locked. Publish the security rules from firestore.rules in the Firebase console (Firestore → Rules → Publish), then try again.";
+  "The database is locked. Publish the security rules in the Firebase console (Firestore > Rules > Publish), then try again.";
 
 export function registerErrorMessage(error: unknown): string {
   switch (classifyAuthError(error)) {
@@ -91,6 +93,6 @@ export function loginErrorMessage(error: unknown): string {
     case "network":
       return "Network error. Check your connection and try again.";
     default:
-      return "Couldn't log you in. Please try again.";
+      return "Could not log you in. Please try again.";
   }
 }

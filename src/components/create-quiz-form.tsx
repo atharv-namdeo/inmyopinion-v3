@@ -495,7 +495,7 @@ export function CreateQuizForm() {
  </SelectTrigger>
  <SelectContent>
  <SelectItem value="multiple-choice">multiple choice</SelectItem>
- <SelectItem value="sliding-bar">slide-the-scale (0–10)</SelectItem>
+ <SelectItem value="sliding-bar">slide-the-scale (0 to 10)</SelectItem>
  </SelectContent>
  </Select>
 
@@ -562,7 +562,7 @@ export function CreateQuizForm() {
  </SelectTrigger>
  <SelectContent>
  <SelectItem value="multiple-choice">multiple choice</SelectItem>
- <SelectItem value="sliding-bar">slide-the-scale (0–10)</SelectItem>
+ <SelectItem value="sliding-bar">slide-the-scale (0 to 10)</SelectItem>
  </SelectContent>
  </Select>
  {editingQuestion?.type ==='multiple-choice' && (
