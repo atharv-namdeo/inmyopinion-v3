@@ -10,6 +10,8 @@ export type Question = {
 
 export type Answers = Record<string, any>;
 
+export type AnonymityMode = 'allow_choice' | 'always_anon' | 'always_named';
+
 export type Quiz = {
   id: string;
   userId: string;
@@ -17,6 +19,7 @@ export type Quiz = {
   questions: Question[];
   createdAt: Timestamp;
   endMessage?: string; // Optional custom end message for quiz completion
+  anonymityMode?: AnonymityMode;
 };
 
 export type UserProfile = {
@@ -31,6 +34,8 @@ export type QuizResponse = {
     quizId: string;
     answers: Answers;
     createdAt: string;
+    isAnonymous?: boolean;
+    respondentName?: string;
 }
 
 // group spill (anonymous voting and roasts among a named group)
@@ -50,6 +55,7 @@ export type Group = {
     members: string[];       // names of everyone in the group
     questions: GroupQuestion[];
     createdAt: Timestamp;
+    anonymityMode?: AnonymityMode;
 };
 
 export type RoastAnswer = {
@@ -58,11 +64,12 @@ export type RoastAnswer = {
     allMembers?: Record<string, string>; // memberName -> roast text
 };
 
-// A single person's anonymous ballot.
+// A single person's ballot.
 export type GroupVote = {
     id: string;
     groupId: string;
     voterName?: string;
+    isAnonymous?: boolean;
     picks: Record<string, string>; // questionId -> member name
     roasts?: Record<string, RoastAnswer>; // questionId -> roast details
     shortAnswers?: Record<string, string>; // questionId -> text answer

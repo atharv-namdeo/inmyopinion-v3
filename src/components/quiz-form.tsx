@@ -4,9 +4,10 @@
 import { useState, useEffect } from 'react';
 import { useRouter, useSearchParams } from 'next/navigation';
 import { motion, AnimatePresence } from 'framer-motion';
-import { ArrowLeft, ArrowRight, ListChecks, SlidersHorizontal } from 'lucide-react';
+import { ArrowLeft, ArrowRight, ListChecks, SlidersHorizontal, ShieldCheck, UserCheck } from 'lucide-react';
 import { useQuiz } from '@/hooks/use-quiz';
 import { Button } from '@/components/ui/button';
+import { Input } from '@/components/ui/input';
 import { Card, CardContent, CardFooter, CardHeader } from '@/components/ui/card';
 import { Progress } from '@/components/ui/progress';
 import { MultipleChoiceQuestion } from '@/components/multiple-choice-question';
@@ -23,6 +24,8 @@ export function QuizForm() {
  const [currentQuestionIndex, setCurrentQuestionIndex] = useState(0);
  const { answers, setAnswer, isLoaded: answersLoaded } = useQuiz();
  const [isQuizLoaded, setIsQuizLoaded] = useState(false);
+ const [isAnonymous, setIsAnonymous] = useState(true);
+ const [respondentName, setRespondentName] = useState('');
 
  useEffect(() => {
  const quizId = searchParams.get('id');
@@ -31,7 +34,13 @@ export function QuizForm() {
  try {
  const quizDoc = await getDoc(doc(db,"quizzes", quizId));
  if (quizDoc.exists()) {
- setQuiz({ id: quizDoc.id,...quizDoc.data() } as Quiz);
+ const qData = { id: quizDoc.id,...quizDoc.data() } as Quiz;
+ setQuiz(qData);
+ if (qData.anonymityMode === 'always_named') {
+ setIsAnonymous(false);
+ } else {
+ setIsAnonymous(true);
+ }
  } else {
  console.error("Quiz not found");
  router.push('/');
@@ -88,6 +97,7 @@ export function QuizForm() {
 
  const currentQuestion = quiz.questions[currentQuestionIndex];
  const progress = ((currentQuestionIndex + 1) / quiz.questions.length) * 100;
+ const effectiveAnon = quiz.anonymityMode === 'always_anon' ? true : quiz.anonymityMode === 'always_named' ? false : isAnonymous;
  const Icon =
  currentQuestion.type ==='multiple-choice'
 ? ListChecks
@@ -141,6 +151,55 @@ export function QuizForm() {
  </motion.div>
  </AnimatePresence>
  </CardContent>
+ {/* Anonymity bar */}
+ <div className="mx-6 mb-4 flex flex-col sm:flex-row items-center justify-between gap-3 rounded-2xl border border-border bg-secondary/30 p-3">
+ <div className="flex items-center gap-2.5">
+ {effectiveAnon ? (
+ <ShieldCheck className="h-4 w-4 text-candy-lime shrink-0" />
+ ) : (
+ <UserCheck className="h-4 w-4 text-candy-blue shrink-0" />
+ )}
+ <div className="text-left">
+ <span className="block text-xs font-bold">
+ {effectiveAnon ? '100% anonymous' : `signed as ${respondentName.trim() || 'friend'}`}
+ </span>
+ <span className="block text-[11px] text-muted-foreground">
+ {effectiveAnon ? 'the creator will not see who answered' : 'your name will appear on results'}
+ </span>
+ </div>
+ </div>
+
+ <div className="flex items-center gap-2 w-full sm:w-auto">
+ {!effectiveAnon && (
+ <Input
+ placeholder="your name..."
+ value={respondentName}
+ onChange={(e) => setRespondentName(e.target.value)}
+ className="h-8 text-xs w-full sm:w-36 rounded-xl"
+ />
+ )}
+ {quiz.anonymityMode === 'always_anon' ? (
+ <span className="text-[10px] font-bold text-muted-foreground uppercase tracking-wider bg-secondary px-2 py-0.5 rounded">
+ host locked
+ </span>
+ ) : quiz.anonymityMode === 'always_named' ? (
+ <span className="text-[10px] font-bold text-muted-foreground uppercase tracking-wider bg-secondary px-2 py-0.5 rounded">
+ names required
+ </span>
+ ) : (
+ <Button
+ type="button"
+ variant="outline"
+ size="sm"
+ onClick={() => setIsAnonymous(!isAnonymous)}
+ className="h-8 text-xs font-bold rounded-xl shrink-0"
+ >
+ {effectiveAnon ? 'sign your name' : 'stay anonymous'}
+ </Button>
+ )}
+ </div>
+ </div>
+
  <CardFooter className="flex justify-between border-t px-6 py-4">
  <Button
  variant="outline"

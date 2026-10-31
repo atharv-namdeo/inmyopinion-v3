@@ -3,7 +3,7 @@
 import { useState, useEffect } from 'react';
 import { useRouter, useSearchParams } from 'next/navigation';
 import { motion, AnimatePresence } from 'framer-motion';
-import { ArrowLeft, ArrowRight, Users, Check, UserPlus, Share2, Sparkles } from 'lucide-react';
+import { ArrowLeft, ArrowRight, Users, Check, UserPlus, Share2, Sparkles, ShieldCheck, UserCheck } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardFooter, CardHeader } from '@/components/ui/card';
 import { Input } from '@/components/ui/input';
@@ -47,6 +47,7 @@ export function GroupVote() {
   const [roastModes, setRoastModes] = useState<Record<string, 'single' | 'all'>>({});
   const [shortAnswers, setShortAnswers] = useState<Record<string, string>>({});
   const [submitting, setSubmitting] = useState(false);
+  const [isAnonymous, setIsAnonymous] = useState(true);
 
   useEffect(() => {
     const id = searchParams.get('id');
@@ -57,6 +58,11 @@ export function GroupVote() {
         if (snap.exists()) {
           const g = { id: snap.id, ...snap.data() } as Group;
           setGroup(g);
+          if (g.anonymityMode === 'always_named') {
+            setIsAnonymous(false);
+          } else {
+            setIsAnonymous(true);
+          }
           // Check saved voter identity
           const saved = localStorage.getItem(`group_voter_${g.id}`);
           if (saved && (g.members || []).some(m => m.toLowerCase() === saved.toLowerCase())) {
@@ -287,10 +293,12 @@ export function GroupVote() {
 
   const submit = async () => {
     setSubmitting(true);
+    const effectiveAnon = group.anonymityMode === 'always_anon' ? true : group.anonymityMode === 'always_named' ? false : isAnonymous;
     try {
       await addDoc(collection(db, 'groupVotes'), {
         groupId: group.id,
         voterName,
+        isAnonymous: effectiveAnon,
         picks,
         roasts,
         shortAnswers,
@@ -310,6 +318,8 @@ export function GroupVote() {
   };
   const handlePrev = () => { if (index > 0) setIndex(index - 1); };
 
+  const effectiveAnon = group.anonymityMode === 'always_anon' ? true : group.anonymityMode === 'always_named' ? false : isAnonymous;
+
   return (
     <Card className="w-full max-w-2xl overflow-hidden">
       <CardHeader className="ngl-grad text-white">
@@ -328,9 +338,40 @@ export function GroupVote() {
         </div>
         <div className="mb-6"><Progress value={progress} className="h-1.5 bg-black/25" /></div>
         <h2 className="display text-3xl font-black lowercase leading-tight text-white">{question.text}</h2>
-        <span className="mt-2 inline-block w-fit text-[11px] font-bold uppercase tracking-wider rounded-md px-2.5 py-0.5 bg-black/25 text-white/90">
-          {qType === 'behavior_roast' ? 'behaviour roast' : qType === 'short_answer' ? 'confession' : 'vote'}
-        </span>
+        <div className="mt-2 flex items-center justify-between flex-wrap gap-2">
+          <span className="inline-block w-fit text-[11px] font-bold uppercase tracking-wider rounded-md px-2.5 py-0.5 bg-black/25 text-white/90">
+            {qType === 'behavior_roast' ? 'behaviour roast' : qType === 'short_answer' ? 'confession' : 'vote'}
+          </span>
+
+          {/* Anonymity mode toggle */}
+          <div className="flex items-center gap-2 rounded-xl bg-black/25 px-2.5 py-1 backdrop-blur-sm border border-white/10">
+            {effectiveAnon ? (
+              <ShieldCheck className="h-3.5 w-3.5 text-candy-lime shrink-0" />
+            ) : (
+              <UserCheck className="h-3.5 w-3.5 text-candy-blue shrink-0" />
+            )}
+            <span className="text-[11px] font-bold text-white/90">
+              {effectiveAnon ? '100% anonymous' : `signed as ${voterName}`}
+            </span>
+            {group.anonymityMode === 'always_anon' ? (
+              <span className="text-[9px] uppercase font-bold text-white/60 bg-white/10 px-1.5 py-0.5 rounded">
+                host locked
+              </span>
+            ) : group.anonymityMode === 'always_named' ? (
+              <span className="text-[9px] uppercase font-bold text-white/60 bg-white/10 px-1.5 py-0.5 rounded">
+                names required
+              </span>
+            ) : (
+              <button
+                type="button"
+                onClick={() => setIsAnonymous(!isAnonymous)}
+                className="ml-1 rounded-md bg-white/20 px-2 py-0.5 text-[10px] font-bold text-white hover:bg-white/30 transition-colors"
+              >
+                {effectiveAnon ? 'reveal name' : 'make anon'}
+              </button>
+            )}
+          </div>
+        </div>
       </CardHeader>
 
       <CardContent className="min-h-[220px] py-6">

@@ -4,7 +4,7 @@ import { useState, useEffect } from 'react';
 import { useRouter, useSearchParams } from 'next/navigation';
 import { motion, AnimatePresence } from 'framer-motion';
 import {
-  PlusCircle, Trash2, Wand2, Users, Share2, Save, Home, Pencil, PartyPopper, Check, X, UserPlus, Sparkles, MessageCircle
+  PlusCircle, Trash2, Wand2, Users, Share2, Save, Home, Pencil, PartyPopper, Check, X, UserPlus, Sparkles, MessageCircle, ShieldCheck, UserCheck
 } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from '@/components/ui/card';
@@ -12,7 +12,7 @@ import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Textarea } from '@/components/ui/textarea';
 import { Badge } from '@/components/ui/badge';
-import { type GroupQuestion, type GroupQuestionType, type Group } from '@/lib/types';
+import { type GroupQuestion, type GroupQuestionType, type Group, type AnonymityMode } from '@/lib/types';
 import { useToast } from '@/hooks/use-toast';
 import { useAuth } from '@/hooks/use-auth';
 import { db } from '@/lib/firebase';
@@ -63,6 +63,7 @@ export function CreateGroupForm() {
 
   const [groupId, setGroupId] = useState<string | null>(null);
   const [groupName, setGroupName] = useState('the squad');
+  const [anonymityMode, setAnonymityMode] = useState<AnonymityMode>('allow_choice');
   const [members, setMembers] = useState<string[]>([]);
   const [newMember, setNewMember] = useState('');
   const [questions, setQuestions] = useState<GroupQuestion[]>([]);
@@ -84,6 +85,7 @@ export function CreateGroupForm() {
           const g = snap.data() as Group;
           setGroupId(snap.id);
           setGroupName(g.name);
+          if (g.anonymityMode) setAnonymityMode(g.anonymityMode);
           setMembers(g.members ?? []);
           setQuestions((g.questions ?? []).map((q, i) => ({ ...q, id: `db-${i}-${Date.now()}` })));
         } else {
@@ -170,6 +172,7 @@ export function CreateGroupForm() {
       name: groupName || 'the squad',
       members,
       questions,
+      anonymityMode,
       createdAt: serverTimestamp(),
     };
 
@@ -428,6 +431,60 @@ export function CreateGroupForm() {
               placeholder="e.g. the roommates, bio class, the gc"
               className="text-lg"
             />
+          </div>
+
+          {/* anonymity setting */}
+          <div className="space-y-3 rounded-2xl border-2 border-border bg-secondary/30 p-4">
+            <div className="flex items-center justify-between">
+              <Label className="text-sm font-bold flex items-center gap-2">
+                <ShieldCheck className="h-4 w-4 text-primary" /> anonymity setting
+              </Label>
+              <span className="text-xs font-semibold text-muted-foreground">
+                {anonymityMode === 'allow_choice'
+                  ? 'friends choose'
+                  : anonymityMode === 'always_anon'
+                  ? '100% anonymous only'
+                  : 'names shown'}
+              </span>
+            </div>
+            <div className="grid grid-cols-1 sm:grid-cols-3 gap-2 pt-1">
+              <button
+                type="button"
+                onClick={() => setAnonymityMode('allow_choice')}
+                className={`rounded-xl border-2 p-3 text-left transition-all ${
+                  anonymityMode === 'allow_choice'
+                    ? 'border-primary bg-primary/10 text-foreground font-bold shadow-sm'
+                    : 'border-border bg-background/50 text-muted-foreground hover:border-border/80'
+                }`}
+              >
+                <span className="block text-xs font-bold text-foreground">voters choose</span>
+                <span className="block text-[10px] text-muted-foreground mt-0.5">anonymous by default, option to reveal name</span>
+              </button>
+              <button
+                type="button"
+                onClick={() => setAnonymityMode('always_anon')}
+                className={`rounded-xl border-2 p-3 text-left transition-all ${
+                  anonymityMode === 'always_anon'
+                    ? 'border-primary bg-primary/10 text-foreground font-bold shadow-sm'
+                    : 'border-border bg-background/50 text-muted-foreground hover:border-border/80'
+                }`}
+              >
+                <span className="block text-xs font-bold text-foreground">always anonymous</span>
+                <span className="block text-[10px] text-muted-foreground mt-0.5">all roasts and votes are strictly anonymous</span>
+              </button>
+              <button
+                type="button"
+                onClick={() => setAnonymityMode('always_named')}
+                className={`rounded-xl border-2 p-3 text-left transition-all ${
+                  anonymityMode === 'always_named'
+                    ? 'border-primary bg-primary/10 text-foreground font-bold shadow-sm'
+                    : 'border-border bg-background/50 text-muted-foreground hover:border-border/80'
+                }`}
+              >
+                <span className="block text-xs font-bold text-foreground">public names</span>
+                <span className="block text-[10px] text-muted-foreground mt-0.5">everyone sees who voted and roasted</span>
+              </button>
+            </div>
           </div>
 
           {/* members */}

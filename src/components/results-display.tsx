@@ -28,11 +28,19 @@ export function ResultsDisplay() {
  if (answersLoaded && Object.keys(answers).length > 0) {
  const saveAnswers = async () => {
  try {
+ const isAnon = typeof window !== 'undefined' ? localStorage.getItem('spill_is_anon') !== 'false' : true;
+ const respName = typeof window !== 'undefined' ? (localStorage.getItem('spill_respondent_name') || '') : '';
  await addDoc(collection(db,"responses"), {
  quizId,
  answers,
+ isAnonymous: isAnon,
+ respondentName: isAnon ? '' : respName.trim(),
  createdAt: new Date().toISOString(),
  });
+ if (typeof window !== 'undefined') {
+ localStorage.removeItem('spill_is_anon');
+ localStorage.removeItem('spill_respondent_name');
+ }
  clearAnswers();
  } catch (error) {
  console.error("Error saving responses: ", error);
@@ -65,7 +73,7 @@ export function ResultsDisplay() {
  </span>
  <CardTitle className="relative mt-3 text-4xl lowercase text-white">you spilled the tea</CardTitle>
  <CardDescription className="relative mt-2 max-w-sm font-semibold text-white/85">
- thanks for spilling! your anon answer just got added to the pile.
+ thanks for spilling! your answers have been added to the tea.
  </CardDescription>
  </CardHeader>
  <CardContent className="flex min-h-[80px] items-center justify-center pt-6">

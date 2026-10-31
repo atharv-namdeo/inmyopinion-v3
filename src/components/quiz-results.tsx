@@ -9,7 +9,7 @@ import { doc, getDoc, collection, query, where, getDocs } from 'firebase/firesto
 import { type Quiz, type QuizResponse, type Question } from '@/lib/types';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
-import { Home, BarChart2, Coffee } from 'lucide-react';
+import { Home, BarChart2, Coffee, ShieldCheck, UserCheck } from 'lucide-react';
 import { Skeleton } from '@/components/ui/skeleton';
 import { MultipleChoiceResult } from './multiple-choice-result';
 import { SlidingBarResult } from './sliding-bar-result';
@@ -163,6 +163,39 @@ export function QuizResults({ quizId }: Props) {
  </Card>
  ) : (
  <>
+ {/* Anonymity breakdown */}
+ {(() => {
+ const signedResponses = responses.filter((r) => r.isAnonymous === false && r.respondentName?.trim());
+ const anonCount = responses.length - signedResponses.length;
+ return (
+ <div className="flex flex-wrap items-center justify-between gap-3 rounded-2xl border border-border bg-secondary/30 p-4">
+ <div className="flex flex-wrap items-center gap-2.5 text-xs font-semibold">
+ <div className="flex items-center gap-1.5 font-bold text-foreground">
+ <ShieldCheck className="h-4 w-4 text-candy-lime" />
+ <span>{anonCount} anonymous {anonCount === 1 ? 'response' : 'responses'}</span>
+ </div>
+ {signedResponses.length > 0 && (
+ <>
+ <span className="text-muted-foreground">·</span>
+ <div className="flex flex-wrap items-center gap-1.5 font-bold text-foreground">
+ <UserCheck className="h-4 w-4 text-candy-blue" />
+ <span>signed by:</span>
+ {signedResponses.map((r, rI) => (
+ <span key={rI} className="rounded-md bg-secondary/80 px-2 py-0.5 text-xs font-black text-foreground">
+ {r.respondentName}
+ </span>
+ ))}
+ </div>
+ </>
+ )}
+ </div>
+ <span className="text-[11px] font-mono font-bold text-muted-foreground">
+ {quiz.anonymityMode === 'always_anon' ? '100% anon spill' : quiz.anonymityMode === 'always_named' ? 'public spill' : 'choice spill'}
+ </span>
+ </div>
+ );
+ })()}
+
  <AiVerdict quiz={quiz} responses={responses} />
  {quiz.questions.map((question, index) => (
  <div key={question.id}>

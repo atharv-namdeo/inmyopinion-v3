@@ -4,14 +4,14 @@
 import { useState, useEffect } from 'react';
 import { useRouter, useSearchParams } from 'next/navigation';
 import { motion, AnimatePresence } from 'framer-motion';
-import { PlusCircle, Trash2, Wand2, ListChecks, SlidersHorizontal, Check, X, Share2, Save, Home, Pencil, PartyPopper } from 'lucide-react';
+import { PlusCircle, Trash2, Wand2, ListChecks, SlidersHorizontal, Check, X, Share2, Save, Home, Pencil, PartyPopper, ShieldCheck, UserCheck } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from '@/components/ui/card';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Textarea } from '@/components/ui/textarea';
 import { questions as suggestedQuestions } from '@/lib/questions';
-import { type Question, type Quiz } from '@/lib/types';
+import { type Question, type Quiz, type AnonymityMode } from '@/lib/types';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { Badge } from '@/components/ui/badge';
 import { useToast } from '@/hooks/use-toast';
@@ -28,6 +28,7 @@ export function CreateQuizForm() {
  const [quizId, setQuizId] = useState<string | null>(null);
 
  const [quizTitle, setQuizTitle] = useState('my spill');
+  const [anonymityMode, setAnonymityMode] = useState<AnonymityMode>('allow_choice');
  const [questions, setQuestions] = useState<Question[]>([]);
  const [endMessage, setEndMessage] = useState('thanks for spilling');
  const [newQuestionText, setNewQuestionText] = useState('');
@@ -51,6 +52,7 @@ export function CreateQuizForm() {
  setQuizTitle(existingQuiz.title);
  setQuestions(existingQuiz.questions.map((q, i) => ({...q, id: `db-${i}-${Date.now()}` })));
  setEndMessage(existingQuiz.endMessage ||'thanks for spilling');
+          if (existingQuiz.anonymityMode) setAnonymityMode(existingQuiz.anonymityMode);
  } else {
  toast({
  variant: "destructive",
@@ -202,6 +204,7 @@ export function CreateQuizForm() {
  title: quizTitle ||'my spill',
  questions,
  endMessage,
+ anonymityMode,
  createdAt: serverTimestamp(),
  };
 
@@ -475,6 +478,58 @@ export function CreateQuizForm() {
  />
  <p className="text-xs text-muted-foreground">shown after someone finishes. leave blank for the default.</p>
  </div>
+  <div className="space-y-3 rounded-2xl border-2 border-border bg-secondary/30 p-4">
+    <div className="flex items-center justify-between">
+      <Label className="text-sm font-bold flex items-center gap-2">
+        <ShieldCheck className="h-4 w-4 text-primary" /> anonymity setting
+      </Label>
+      <span className="text-xs font-semibold text-muted-foreground">
+        {anonymityMode === 'allow_choice'
+          ? 'respondents choose'
+          : anonymityMode === 'always_anon'
+          ? '100% anonymous only'
+          : 'names shown'}
+      </span>
+    </div>
+    <div className="grid grid-cols-1 sm:grid-cols-3 gap-2 pt-1">
+      <button
+        type="button"
+        onClick={() => setAnonymityMode('allow_choice')}
+        className={`rounded-xl border-2 p-3 text-left transition-all ${
+          anonymityMode === 'allow_choice'
+            ? 'border-primary bg-primary/10 text-foreground font-bold shadow-sm'
+            : 'border-border bg-background/50 text-muted-foreground hover:border-border/80'
+        }`}
+      >
+        <span className="block text-xs font-bold text-foreground">respondents choose</span>
+        <span className="block text-[10px] text-muted-foreground mt-0.5">anonymous by default, option to sign name</span>
+      </button>
+      <button
+        type="button"
+        onClick={() => setAnonymityMode('always_anon')}
+        className={`rounded-xl border-2 p-3 text-left transition-all ${
+          anonymityMode === 'always_anon'
+            ? 'border-primary bg-primary/10 text-foreground font-bold shadow-sm'
+            : 'border-border bg-background/50 text-muted-foreground hover:border-border/80'
+        }`}
+      >
+        <span className="block text-xs font-bold text-foreground">always anonymous</span>
+        <span className="block text-[10px] text-muted-foreground mt-0.5">answers are strictly anonymous</span>
+      </button>
+      <button
+        type="button"
+        onClick={() => setAnonymityMode('always_named')}
+        className={`rounded-xl border-2 p-3 text-left transition-all ${
+          anonymityMode === 'always_named'
+            ? 'border-primary bg-primary/10 text-foreground font-bold shadow-sm'
+            : 'border-border bg-background/50 text-muted-foreground hover:border-border/80'
+        }`}
+      >
+        <span className="block text-xs font-bold text-foreground">names required</span>
+        <span className="block text-[10px] text-muted-foreground mt-0.5">friends must sign their name</span>
+      </button>
+    </div>
+  </div>
 
  <div className="space-y-4 rounded-2xl border-2 border-border bg-secondary/30 p-4">
  <h3 className="font-bold lowercase">add a question </h3>
