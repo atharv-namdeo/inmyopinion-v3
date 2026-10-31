@@ -70,9 +70,7 @@ const Button = React.forwardRef<HTMLButtonElement, ButtonProps>(
             className="pointer-events-none absolute inset-0 -translate-x-full bg-gradient-to-r from-transparent via-white/25 to-transparent transition-transform duration-700 ease-out-expo group-hover/btn:translate-x-full"
           />
         )}
-        <span className="relative z-10 inline-flex items-center gap-2">
-          {children}
-        </span>
+        {children}
       </Comp>
     )
   }

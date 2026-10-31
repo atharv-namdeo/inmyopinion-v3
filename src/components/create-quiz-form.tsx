@@ -721,7 +721,7 @@ export function CreateQuizForm() {
                 className="h-auto min-h-9 py-2 px-3.5 whitespace-normal text-left justify-start leading-snug w-full sm:w-auto max-w-full break-words rounded-xl"
               >
                 <PlusCircle className="mr-2 h-4 w-4 shrink-0 text-primary" />
-                <span className="break-words text-xs">{q.text}</span>
+                <span className="break-words text-xs min-w-0 flex-1">{q.text}</span>
               </Button>
  ))}
  </CardContent>
